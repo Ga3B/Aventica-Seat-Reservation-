@@ -1,2 +1,2 @@
-# Aventica-Seat-Reservation-
+# Aventica-Seat-Reservation
 Репозиторий для проектного интенсива "Университет 20.35"
