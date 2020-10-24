@@ -7,3 +7,6 @@ from django.shortcuts import render
 def index(request):
     # return HttpResponse("test")
     return render(request, 'MainApp/index.html')
+
+def booking(request):
+    return  render(request,'MainApp/booking.html')
