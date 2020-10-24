@@ -10,8 +10,35 @@ Booking
 <center><h3><span class="badge badge-primary">Алькатрас</span> <span class="badge badge-primary">Переговорная №1</span></h3></center>
 <ul class="list-group list-group-horizontal-lg">
 <!--  тут форма выбора места  -->
-  <li  class="list-group-item">
- <img src="http://www.f3conceptsllc.com/wp-content/uploads/12.17.14-Large-Breakroom-View-1.jpg" width="40*" height="100%" class="card-img-top" alt="...">
+<form method="post">
+    {% csrf_token %}
+</form>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <li class="list-group-item">
+<img id="goal" src="{%static 'images/1111.jpg'%}" usemap="#goal-map">
+
+<map name="goal-map" id="map">
+  <area target="" alt="" title="Место №1" href="" coords="128,178,103,242,167,250,182,184" shape="poly">
+  <area target="" alt="" title="Место №2" href="" coords="306,220,400,219,400,306,307,312" shape="poly">
+  <area target="" alt="" title="Место №3" href="" coords="469,147,472,236,569,233,559,157" shape="poly">
+</map>
+    <br/>
+<input type="text" id="placeid" hidden="true">
+<p id="chosen">
+  Вы выбрали 
+</p>
+
+<script>
+  var cnt = 0;
+$("#map").on("click", function(e) {
+  e.preventDefault();
+  var $tgt = $(e.target);
+  // console.log($tgt.attr("alt"));
+  $("#chosen").text("Вы выбрали " + $tgt.attr("title"))
+  }  
+);
+</script>
+ 
 
   </li>
 

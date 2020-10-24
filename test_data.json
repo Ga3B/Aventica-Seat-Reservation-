@@ -1,0 +1,31 @@
+{
+    "name": "\u0423\u043d\u0438\u0432\u0435\u0440\u0441\u0430\u043b\u044c\u043d\u043e\u0435 \u0440\u0430\u0431\u043e\u0447\u0435\u0435 \u043c\u0435\u0441\u0442\u043e \u21161",
+    "tags": [
+        {
+            "tags": {
+                "cooler": true,
+                "window": false,
+                "smoking_room": false,
+                "printer": false,
+                "video_conf": true
+            }
+        }
+    ],
+    "schedule": [
+        {
+            "start": "2020/10/25 11:00",
+            "end": "2020/10/25 12:00",
+            "owner": "User1"
+        },
+        {
+            "start": "2020/10/30 09:00",
+            "end": "2020/10/30 22:00",
+            "owner": "User1"
+        },
+        {
+            "start": "2020/10/24 16:00",
+            "end": "2020/10/24 18:00",
+            "owner": "User1"
+        }
+    ]
+}
