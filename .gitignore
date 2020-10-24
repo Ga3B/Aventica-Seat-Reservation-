@@ -5,3 +5,5 @@ ASRvenv
 .env
 *.sublime-project
 *.sublime-workspace
+*.xml
+*.iml
