@@ -18,6 +18,30 @@ def booking(request):
     return render(request, 'MainApp/booking.html', {'data': [data]})
 
 
+def change_room(request):
+    return render(request, 'MainApp/change_room.html')
+
+
+def change_seat(request):
+    return render(request, 'MainApp/change_seat.html')
+
+
+def change_time(request):
+    return render(request, 'MainApp/change_time.html')
+
+
+def change_work(request):
+    return render(request, 'MainApp/change_work.html')
+
+
+def my_booking(request):
+    return render(request, 'MainApp/my_booking.html')
+
+
+def about_booking(request):
+    return render(request, 'MainApp/about_booking.html')
+
+
 def postb(request):
     if request.is_ajax and request.method == "POST":
         # get the form data

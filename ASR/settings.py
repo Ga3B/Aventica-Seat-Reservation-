@@ -55,8 +55,8 @@ ROOT_URLCONF = 'ASR.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        ##Основные шаблоные(которые есть на каждой странице) хранятся в корне проекта##
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
+        # Основные шаблоные(которые есть на каждой странице) хранятся в корне проекта
+        'DIRS': [os.path.join(BASE_DIR, 'ASR/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
