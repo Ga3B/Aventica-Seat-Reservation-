@@ -16,7 +16,7 @@ class User_preferences(models.Model):
         (11, 'Asia/Sakhalin, UTC+11:00'),
         (12, 'Asia/Kamchatka, UTC+12:00')
     ]
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         User, on_delete=models.CASCADE)
     timezone = models.CharField(choices=ru_timezones, max_length=30)
     photo = models.ImageField(blank=True, null=True)
@@ -37,8 +37,8 @@ class Tag(models.Model):
 class Office(models.Model):
     name = models.CharField(max_length=50)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    photo = models.ImageField(blank=True, null=True)
-    office_map = models.ImageField()
+    photo = models.ImageField(upload_to='media/office_photos', blank=True, null=True)
+    office_map = models.ImageField(upload_to='media/office_maps')
 
 
 class Workplace(models.Model):
@@ -50,14 +50,14 @@ class Office_Object(models.Model):
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     workplace = models.ForeignKey(Workplace, blank=True, null=True, on_delete=models.CASCADE)
-    icon = models.ImageField(blank=True, null=True)
+    icon = models.ImageField(upload_to='media/icons', blank=True, null=True)
     x_pos = models.IntegerField()
     y_pos = models.IntegerField()
 
 
 class Meeting_Room(models.Model):
     name = models.CharField(max_length=50)
-    photo = models.ImageField(blank=True, null=True)
+    photo = models.ImageField(upload_to='media/mr_photos', blank=True, null=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag)
     capacity = models.IntegerField()
