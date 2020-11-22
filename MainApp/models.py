@@ -29,6 +29,9 @@ class Location(models.Model):
     floor = models.IntegerField()
     room_number = models.IntegerField()
 
+    def __str__(self):
+        return f'{self.floor} этаж, комната {self.room_number}'
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)
@@ -39,6 +42,7 @@ class Office(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='media/office_photos', blank=True, null=True)
     office_map = models.ImageField(upload_to='media/office_maps')
+    description = models.TextField(blank=True, null=True)
 
 
 class Workplace(models.Model):

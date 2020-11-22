@@ -3,7 +3,7 @@ from MainApp.models import *
 from datetime import timedelta, date, datetime
 import pytz
 import os
-from random import sample, choice
+from random import choice
 
 
 def clear_users():
@@ -58,10 +58,10 @@ def clear_all():
 
 
 def check_workplace_schedule(wp_id, book_date):
-    # Test as check_schedule(...)[0]!!!
     '''
     param room_id (int)
     param date (datetime date)
+    Test this as check_schedule(...)[0], since return value is a tuple!
     '''
 
     try:
@@ -138,8 +138,6 @@ def fill():
     # clear_all()
     # print('filled!!!')
 
-    MEDIA_PATH = 'C:\\Users\\georg\\Desktop\\2035\\Aventica-Seat-Reservation\\media'
-
     user = User.objects.create_user(
         username='User1', password='User1', email='example@aventica.ru')
     user_prefs = User_preferences.objects.create(
@@ -157,10 +155,9 @@ def fill():
         Tag.objects.create(name=tag)
     tags = Tag.objects.all()
 
-    office1 = Office.objects.create(name="Офис№1", location=office_loc,
-                                    photo=os.path.join(
-                                        MEDIA_PATH, 'office_photos\\office1.jpg'),
-                                    office_map=os.path.join(MEDIA_PATH, 'office_maps\\office1.jpg'))
+    office1 = Office.objects.create(name="Офис№1", location=office_loc, description="Пустое описание",
+                                    photo='media\\office_photos\\office1.jpg',
+                                    office_map='media\\office_maps\\office1.jpg')
 
     for i in range(7):
         wp = Workplace.objects.create(office=office1)
@@ -168,10 +165,9 @@ def fill():
         wp.tags.add(*tgs)
         wp.save()
         oo = Office_Object.objects.create(office=office1, name=f"Object {i}", x_pos=i * 10 + 10, y_pos=(i & 1) * 200,
-                                          workplace=wp, icon=os.path.join(
-                                              MEDIA_PATH, 'icons\\default_workplace.jpg'))
+                                          workplace=wp, icon='media\\icons\\default_workplace.jpg')
 
-    mr = Meeting_Room.objects.create(name='Переговорная комната№1', photo=os.path.join(MEDIA_PATH, 'mr_photos\\mr1.jpg'),
+    mr = Meeting_Room.objects.create(name='Переговорная комната№1', photo='media\\mr_photos\\mr1.jpg',
                                      location=mr_loc, capacity=15, description="Пустое описание")
     mr.tags.add(*[tags[i]
                   for i in [x for x in range(choice([1, 2, 3, 4, 5]))]])
@@ -236,8 +232,8 @@ def prep():
                                  0].timezone.split(',')[0])
         print(
             (f'MR {i.meeting_room}'
-              f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'
-              f'to {i.finish.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'))
+             f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'
+             f'to {i.finish.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'))
 
 
 # if __name__ == '__main__':
