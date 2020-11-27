@@ -1,4 +1,5 @@
-from json import load
+from json import load, dumps
+from datetime import datetime
 from django.shortcuts import render, get_object_or_404
 from .models import *  # Check for possible namespace clashes
 from .forms import Workplace_ScheduleForm, Meeting_Room_ScheduleForm
@@ -51,17 +52,18 @@ def about_booking(request):
     return render(request, 'MainApp/about_booking.html')
 
 
-def postb(request):
+def book(request):
     if request.is_ajax and request.method == "POST":
         # get the form data
-        rp = request.POST.get('id', '')
-        with open('test_data.json', encoding='utf-8') as f:
-            data = load(f)
+        data = {}
+        data['date'] = request.POST.get('date', '')
+        data['start'] = request.POST.get('start', '')
+        data['finish'] = request.POST.get('finish', '')
+        data['room_id'] = request.POST.get('room_id', '')
+        d = datetime.strptime(data['start'], '%H:%M %z')
 
-        # save the data and after fetch the object in instance
-        if True:
-            place = data[int(rp) - 1]
-            return JsonResponse(place, status=200)
+        if all([data['date'], data['start'], data['finish'], data['room_id']]):
+            return JsonResponse(dumps(str(d.tzinfo)), safe=False, status=200)
         else:
             return JsonResponse({"error": "400"}, status=400)
 

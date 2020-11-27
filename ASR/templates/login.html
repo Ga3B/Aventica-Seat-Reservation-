@@ -43,27 +43,13 @@
 
                 <div class=" mt-3">
                     <a class="ml-2" type="submit"
-                        href="https://oauth.yandex.ru/authorize?response_type=token&client_id=8dfe252eba8d4db1a46891e94ebc23ac">
+                        href="{% url 'social:begin' 'yandex-oauth2' %}">
                         <img class="doc-c-image doc-c-image"
                             src="//yastatic.net/doccenter/images/tech2.yandex.ru/ru/passport/doc/dg/freeze/6rDvXXB38VOBgtxkOExfxnZPUWs.png">
-                    </a>
+                    Войти через Яндекс</a>
                 </div>
-
 
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
     {% endblock %}

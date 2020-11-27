@@ -11,5 +11,5 @@ urlpatterns = [
     path('change_time/<str:place>/<int:place_id>', change_time, name='change_time'),
     path('my_booking', my_booking, name='my_booking'),
     path('about_booking', about_booking, name='about_booking'),
-    path('ajax/postb', postb, name='postb'),
+    path('ajax/book', book, name='book'),
 ]
