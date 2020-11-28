@@ -23,19 +23,19 @@ class User_preferencesAdmin(admin.ModelAdmin):
     # Register your models here.
 
 
-# @admin.register(Location)
-# class LocationAdmin(admin.ModelAdmin):
-#     fields = (())
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    fields = (())
 
 
-# @admin.register(Tag)
-# class TagAdmin(admin.ModelAdmin):
-#     fields = (())
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    fields = (())
 
 
-# @admin.register(Office)
-# class OfficeAdmin(admin.ModelAdmin):
-#     fields = (())
+@admin.register(Office)
+class OfficeAdmin(admin.ModelAdmin):
+    fields = (())
 
 
 @admin.register(Meeting_Room)
@@ -43,19 +43,19 @@ class Meeting_RoomAdmin(admin.ModelAdmin):
     fields = (())
 
 
-# @admin.register(Workplace)
-# class WorkplaceAdmin(admin.ModelAdmin):
-#     fields = (())
+@admin.register(Workplace)
+class WorkplaceAdmin(admin.ModelAdmin):
+    fields = (())
 
 
-# @admin.register(Office_Object)
-# class Office_ObjectAdmin(admin.ModelAdmin):
-#     fields = (())
+@admin.register(Office_Object)
+class Office_ObjectAdmin(admin.ModelAdmin):
+    fields = (())
 
 
-# @admin.register(Workplace_Schedule)
-# class Workplace_ScheduleAdmin(admin.ModelAdmin):
-#     fields = (())
+@admin.register(Workplace_Schedule)
+class Workplace_ScheduleAdmin(admin.ModelAdmin):
+    fields = (())
 
 
 @admin.register(Meeting_Room_Schedule)
