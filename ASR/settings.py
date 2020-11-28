@@ -111,8 +111,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-SOCIAL_AUTH_YANDEX_OAUTH2_KEY = '8dfe252eba8d4db1a46891e94ebc23ac'        # App ID
-SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = '1d0f01eb98cd446ab994134bf9bf5b76'     # App Secret
+SOCIAL_AUTH_YANDEX_OAUTH2_KEY = config('SOCIAL_AUTH_YANDEX_OAUTH2_KEY')        # App ID
+SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = config('SOCIAL_AUTH_YANDEX_OAUTH2_SECRET')  # App Secret
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
