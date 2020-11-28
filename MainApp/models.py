@@ -18,52 +18,20 @@ class User_preferences(models.Model):
     ]
     user = models.ForeignKey(
         User, on_delete=models.CASCADE)
-    timezone = models.CharField(choices=ru_timezones, max_length=30)
+    timezone = models.CharField(choices=ru_timezones, max_length=32)
     photo = models.ImageField(blank=True, null=True)
     yandex_mail = models.EmailField(blank=True, null=True)
     sync_on = models.BooleanField(default=False)
     notifications_on = models.BooleanField(default=False)
 
 
-class Location(models.Model):
-    floor = models.IntegerField()
-    room_number = models.IntegerField()
-
-    def __str__(self):
-        return f'{self.floor} этаж, комната {self.room_number}'
-
-
-class Tag(models.Model):
-    name = models.CharField(max_length=50)
-
-
-class Office(models.Model):
-    name = models.CharField(max_length=50)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to='media/office_photos', blank=True, null=True)
-    office_map = models.ImageField(upload_to='media/office_maps')
-    description = models.TextField(blank=True, null=True)
-
-
 class Workplace(models.Model):
-    office = models.ForeignKey(Office, on_delete=models.CASCADE)
-    tags = models.ManyToManyField(Tag)
-
-
-class Office_Object(models.Model):
-    office = models.ForeignKey(Office, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    workplace = models.ForeignKey(Workplace, blank=True, null=True, on_delete=models.CASCADE)
-    icon = models.ImageField(upload_to='media/icons', blank=True, null=True)
-    x_pos = models.IntegerField()
-    y_pos = models.IntegerField()
+    description = models.TextField(blank=True, null=True)
 
 
 class Meeting_Room(models.Model):
     name = models.CharField(max_length=50)
-    photo = models.ImageField(upload_to='media/mr_photos', blank=True, null=True)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    tags = models.ManyToManyField(Tag)
     capacity = models.IntegerField()
     description = models.TextField(blank=True, null=True)
 
@@ -71,9 +39,10 @@ class Meeting_Room(models.Model):
 class Workplace_Schedule(models.Model):
     workplace = models.ForeignKey(
         Workplace, on_delete=models.CASCADE)
-    date = models.DateField()
     user = models.ForeignKey(
         User, on_delete=models.CASCADE)
+    start = models.DateTimeField()
+    finish = models.DateTimeField()
 
 
 class Meeting_Room_Schedule(models.Model):

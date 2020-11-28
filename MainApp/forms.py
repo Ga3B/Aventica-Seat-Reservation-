@@ -6,7 +6,7 @@ class Workplace_ScheduleForm(ModelForm):
     class Meta:
         required_css_class = 'form-control'
         model = Workplace_Schedule
-        fields = ['date']
+        fields = ['start', 'finish']
 
 
 class Meeting_Room_ScheduleForm(ModelForm):

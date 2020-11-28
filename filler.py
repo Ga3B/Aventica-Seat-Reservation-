@@ -1,38 +1,19 @@
 from MainApp.models import *
 # from django.contrib.auth.models import Group, User
-from datetime import timedelta, date, datetime
+from datetime import timedelta, date, datetime, timezone
 import pytz
-import os
+# import os
 from random import choice
 
 
 def clear_users():
     for i in User.objects.all():
-        i.delete()
-
-
-def clear_locations():
-    for i in Location.objects.all():
-        i.delete()
-
-
-def clear_tags():
-    for i in Tag.objects.all():
-        i.delete()
-
-
-def clear_offices():
-    for i in Office.objects.all():
-        i.delete()
+        if not i.is_superuser:
+            i.delete()
 
 
 def clear_workplaces():
     for i in Workplace.objects.all():
-        i.delete()
-
-
-def clear_office_objects():
-    for i in Office_Object.objects.all():
         i.delete()
 
 
@@ -53,80 +34,107 @@ def clear_meeting_rooms_schedule():
 
 def clear_all():
     clear_users()
-    clear_locations()
-    clear_tags()
+    clear_workplaces()
+    clear_meeting_rooms()
 
 
-def check_workplace_schedule(wp_id, book_date):
+def timezone_from_utcoffset(str_utcoffset):
+    if str_utcoffset == 'UTC+02:00':
+        return pytz.timezone('Europe/Kaliningrad')
+    if str_utcoffset == 'UTC+03:00':
+        return pytz.timezone('Europe/Moscow')
+    if str_utcoffset == 'UTC+04:00':
+        return pytz.timezone('Europe/Volgograd')
+    if str_utcoffset == 'UTC+05:00':
+        return pytz.timezone('Asia/Yekaterinburg')
+    if str_utcoffset == 'UTC+06:00':
+        return pytz.timezone('Asia/Omsk')
+    if str_utcoffset == 'UTC+07:00':
+        return pytz.timezone('Asia/Krasnoyarsk')
+    if str_utcoffset == 'UTC+08:00':
+        return pytz.timezone('Asia/Irkutsk')
+    if str_utcoffset == 'UTC+09:00':
+        return pytz.timezone('Asia/Yakutsk')
+    if str_utcoffset == 'UTC+10:00':
+        return pytz.timezone('Asia/Vladivostok')
+    if str_utcoffset == 'UTC+11:00':
+        return pytz.timezone('Asia/Sakhalin')
+    if str_utcoffset == 'UTC+12:00':
+        return pytz.timezone('Asia/Kamchatka')
+    return None
+
+
+def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Room'):
     '''
     param room_id (int)
-    param date (datetime date)
-    Test this as check_schedule(...)[0], since return value is a tuple!
-    '''
-
-    try:
-        if not Workplace.objects.filter(pk=wp_id).exists():
-            return (False, "No such Workplace")
-    except ValueError:
-        return (False, "Invalid Workplace id")
-
-    if book_date not in [(datetime.utcnow().astimezone() + timedelta(days=x)).date() for x in range(15)]:
-        return (False, "Invalid date")
-
-    rows = Workplace_Schedule.objects.filter(
-        workplace_id=wp_id, date=book_date)
-    if not rows:
-        return (True, "Day was free")
-
-    return (False, "Occupied for that date")
-
-
-def check_meeting_room_schedule(room_id, timezone, start, finish):
-    '''
-    param room_id (int)
-    param str_timezone pytz-acceptable timezone name
-    param start (aware! UTC datetime)
-    param finish (aware! UTC datetime)
+    param str_utcoffset offset in form 'UTC+03:00'
+    param date_
+    param start (local datetime)
+    param finish (local datetime)
     Test this as check_schedule(...)[0], since return value is a tuple!
     '''
     print(
-        f'Before start is {start.isoformat()}, finish is {finish.isoformat()}')
+        f'Checking for {place_type}#{place_id}, {start.strftime("%d/%m/%y %H:%M")}, {finish.strftime("%d/%m/%y %H:%M")}')
+    tz = timezone_from_utcoffset(str_utcoffset)
+    if not tz:
+        return (False, "Invalid utc offset")
 
+    print(
+        f'Local start is {start.strftime("%d/%m/%y %H:%M")}, local finish is {finish.strftime("%d/%m/%y %H:%M")}')
     start, finish = start.astimezone(
-        timezone), finish.astimezone(timezone)
+        timezone.utc), finish.astimezone(timezone.utc)
     print(
-        f'After start is {start.isoformat()}, finish is {finish.isoformat()}')
+        f'UTC start is {start.strftime("%d/%m/%y %H:%M")}, UTC finish is {finish.strftime("%d/%m/%y %H:%M")}')
 
-    try:
-        if not Meeting_Room.objects.filter(pk=room_id).exists():
-            return (False, "No such Meeting room")
-    except ValueError:
-        return (False, "Invalid Meeting room id")
+    if place_type == 'Workplace':
+        try:
+            if not Workplace.objects.filter(pk=place_id).exists():
+                return (False, "No such Workplace")
+
+            rows = Workplace_Schedule.objects.filter(workplace_id=place_id)
+            if not rows:
+                return (True, "Whole day was free")
+
+        except ValueError:
+            return (False, "Invalid Workplace id")
+
+    elif place_type == 'Room':
+        try:
+            if not Meeting_Room.objects.filter(pk=place_id).exists():
+                return (False, "No such Meeting room")
+
+            rows = Meeting_Room_Schedule.objects.filter(
+                meeting_room_id=place_id)
+            if not rows:
+                return (True, "Whole day was free")
+
+        except ValueError:
+            return (False, "Invalid Meeting room id")
+
+    else:
+        return (False, "Wrong place_type")
 
     if start.date() != finish.date():
-        return (False, "Invalid date boundaries")
+        return (False, "Start and finish not on the same day")
 
     if start >= finish:
-        return (False, "Start >= finish")
+        return (False, "start >= finish")
 
     if start.hour < 9 or (finish.hour >= 22 and finish.minute > 0):
         return (False, "Invalid time boundaries")
 
-    if start.date() not in [(datetime.now().astimezone(timezone) + timedelta(days=x)).date() for x in range(15)]:
-        return (False, "Invalid start")
-
-    if finish.date() not in [(datetime.now().astimezone(timezone) + timedelta(days=x)).date() for x in range(15)]:
-        return (False, "Invalid finish")
+    if start not in [(datetime.utcnow().astimezone(tz) + timedelta(days=x)).date() for x in range(15)]:
+        return (False, "Invalid date boundaries")
 
     rows = Meeting_Room_Schedule.objects.filter(meeting_room_id=room_id)
     if not rows:
         return (True, "Whole day was free")
 
     for row in rows:
-        if start <= row.start.astimezone(timezone) <= finish:
-            return (False, f"Occupied by {row.user} from {row.start.astimezone(timezone)} to {row.finish.astimezone(timezone)}!")
-        if start <= row.finish.astimezone(timezone) <= finish:
-            return (False, f"Occupied by {row.user} from {row.start.astimezone(timezone)} to {row.finish.astimezone(timezone)}!")
+        if start <= row.start <= finish:
+            return (False, f"Occupied by {row.user} from {row.start} to {row.finish}!")
+        if start <= row.finish <= finish:
+            return (False, f"Occupied by {row.user} from {row.start} to {row.finish}!")
 
     return (True, "Free")
 
@@ -146,57 +154,55 @@ def fill():
         username='User2', password='User2', email='example2@aventica.ru')
     user_msc_prefs = User_preferences.objects.create(
         user=user_msc, timezone='Europe/Moscow, UTC+03:00')
-    office_loc = Location.objects.create(floor=13, room_number=1408)
-    mr_loc = Location.objects.create(floor=0, room_number=1)
-    tags_list = ["Кулер", "У окна", "Курила на этаже", "Кондиционер", "Выделенный принтер",
-                 "Видеосвязь", "Вертикальный монитор", "Два монитора", "Мощная станция", "Windows", "Linux", "MacOS"]
-
-    for tag in tags_list:
-        Tag.objects.create(name=tag)
-    tags = Tag.objects.all()
-
-    office1 = Office.objects.create(name="Офис№1", location=office_loc, description="Пустое описание",
-                                    photo='media\\office_photos\\office1.jpg',
-                                    office_map='media\\office_maps\\office1.jpg')
 
     for i in range(7):
-        wp = Workplace.objects.create(office=office1)
-        tgs = [tags[i] for i in [x for x in range(choice([1, 2, 3, 4, 5]))]]
-        wp.tags.add(*tgs)
-        wp.save()
-        oo = Office_Object.objects.create(office=office1, name=f"Object {i}", x_pos=i * 10 + 10, y_pos=(i & 1) * 200,
-                                          workplace=wp, icon='media\\icons\\default_workplace.jpg')
+        wp = Workplace.objects.create(
+            name=f'Рабочее место №{i}', description="Пустое описание")
 
-    mr = Meeting_Room.objects.create(name='Переговорная комната№1', photo='media\\mr_photos\\mr1.jpg',
-                                     location=mr_loc, capacity=15, description="Пустое описание")
-    mr.tags.add(*[tags[i]
-                  for i in [x for x in range(choice([1, 2, 3, 4, 5]))]])
+    mr1 = Meeting_Room.objects.create(
+        name='Переговорная комната№1', capacity=20, description="Пустое описание")
+    mr2 = Meeting_Room.objects.create(
+        name='Переговорная комната№2', capacity=10, description="Пустое описание")
 
     workplaces = Workplace.objects.all()
-
-    for i in range(20):
-        wp = workplaces[choice([x for x in range(7)])]
-        book_date = date.today() + timedelta(days=choice([0, 1, 2, 3, 4]))
-        if check_workplace_schedule(wp.id, book_date)[0]:
-            Workplace_Schedule.objects.create(
-                workplace=wp, user=user, date=book_date)
-        else:
-            print(
-                f'Failed because {check_workplace_schedule(wp.id, book_date)[1]}')
 
     for i in range(100):
         days = choice([x for x in range(15)])
         hours = choice([x for x in range(24)])
         u = choice([user, user_msc])
         timezone = pytz.timezone(u.user_preferences_set.all()[
-                                 0].timezone.split(',')[0])
-        start = datetime.now().astimezone(timezone) + timedelta(days=days, hours=hours)
-        # days = choice([x for x in range(15)])
+            0].timezone.split(',')[0])
+        str_utcoffset = u.user_preferences_set.all()[
+            0].timezone.split(',')[-1].strip()
+        start = datetime.utcnow().astimezone(timezone) + \
+            timedelta(days=days, hours=hours)
         hours = choice([x for x in range(24)])
         finish = start + timedelta(hours=hours)
-        # print(f'TEST {start.strftime("%d-%m-%y %H:%M")} to {finish.strftime("%d-%m-%y %H:%M")}')
-        res, cause = check_meeting_room_schedule(
-            mr.id, timezone, start, finish)
+        wp = workplaces[choice([x for x in range(7)])]
+        res, cause = check_place_schedule(
+            wp.id, str_utcoffset, start, finish, 'Workplace')
+        if res:
+            Workplace_Schedule.objects.create(
+                workplace=wp, start=start, finish=finish, user=u)
+        else:
+            print(
+                f'Failed because {cause}')
+
+    for i in range(100):
+        days = choice([x for x in range(15)])
+        hours = choice([x for x in range(24)])
+        u = choice([user, user_msc])
+        timezone = pytz.timezone(u.user_preferences_set.all()[
+            0].timezone.split(',')[0])
+        str_utcoffset = u.user_preferences_set.all()[
+            0].timezone.split(',')[-1].strip()
+        start = datetime.utcnow().astimezone(timezone) + \
+            timedelta(days=days, hours=hours)
+        hours = choice([x for x in range(24)])
+        finish = start + timedelta(hours=hours)
+        mr = choice([mr1, mr2])
+        res, cause = check_place_schedule(
+            mr.id, str_utcoffset, start, finish)
         if res:
             Meeting_Room_Schedule.objects.create(
                 meeting_room=mr, start=start, finish=finish, user=u)
@@ -204,34 +210,26 @@ def fill():
             print(
                 f'Failed because {cause}')
 
-    # i = 0
-    # while i < 25:
-    #     _date = date.today() + timedelta(days=choice([0, 1, 2, 3, 4]))
-    #     starts_at_unit = choice([x for x in range(16)])
-    #     ends_at_unit = starts_at_unit + choice([x for x in range(16)])
-    #     while ends_at_unit < starts_at_unit or ends_at_unit > 15:
-    #         ends_at_unit = starts_at_unit + choice([x for x in range(16)])
-    #     presentation_id = presentations[choice([x for x in range(10)])].id
-    #     room_id = rooms[choice([x for x in range(5)])].id
-    #     if check_schedule(room_id, _date, starts_at_unit, ends_at_unit):
-    #         s = Schedule(date=_date, starts_at_unit=starts_at_unit,
-    #                      ends_at_unit=ends_at_unit,
-    #                      presentation_id=presentation_id, room_id=room_id)
-    #         s.save()
-    #         i += 1
-
 
 def prep():
     clear_all()
     fill()
-    wps = Workplace_Schedule.objects.all().order_by('workplace')
+    wps = Workplace_Schedule.objects.all().order_by('start')
     mrs = Meeting_Room_Schedule.objects.all().order_by('start')
-    mr = Meeting_Room.objects.all()[0]
+    # mr = Meeting_Room.objects.all()[0]
     for i in mrs:
         timezone = pytz.timezone(i.user.user_preferences_set.all()[
                                  0].timezone.split(',')[0])
         print(
             (f'MR {i.meeting_room}'
+             f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'
+             f'to {i.finish.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'))
+
+    for i in wps:
+        timezone = pytz.timezone(i.user.user_preferences_set.all()[
+                                 0].timezone.split(',')[0])
+        print(
+            (f'MR {i.workplace}'
              f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'
              f'to {i.finish.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'))
 
