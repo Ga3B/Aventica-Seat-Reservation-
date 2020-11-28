@@ -56,8 +56,8 @@
                             <label for="exampleFormControlTextarea1">Комментарий</label>
                             <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                             <label for="date">Выберите дату</label><input type="text" id="date">
-                            <label for="time_start">Время начала</label><input type="datetime-local" id="time_start">
-                            <label for="time_end">Время конца</label><input type="datetime-local" id="time_end">
+                            <label for="time_start">Время начала</label><input type="text" id="time_start">
+                            <label for="time_end">Время конца</label><input type="text" id="time_end">
                         </div>
                         <button id="book" type="submit" class="btn btn-primary"  data-toggle="modal" data-target="#exampleModal">Забронировать</button>
                         {% csrf_token %}

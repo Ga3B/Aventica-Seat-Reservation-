@@ -2,13 +2,14 @@ from MainApp.models import *
 # from django.contrib.auth.models import Group, User
 from datetime import timedelta, date, datetime
 import pytz
-import os
+# import os
 from random import choice
 
 
 def clear_users():
     for i in User.objects.all():
-        i.delete()
+        if not i.is_superuser:
+            i.delete()
 
 
 def clear_locations():
@@ -81,12 +82,13 @@ def check_workplace_schedule(wp_id, book_date):
     return (False, "Occupied for that date")
 
 
-def check_meeting_room_schedule(room_id, timezone, start, finish):
+def check_meeting_room_schedule(room_id, timezone, date_, start, finish):
     '''
     param room_id (int)
-    param str_timezone pytz-acceptable timezone name
-    param start (aware! UTC datetime)
-    param finish (aware! UTC datetime)
+    param timezone pytz-acceptable timezone instance
+    param date_
+    param start (local time)
+    param finish (local time)
     Test this as check_schedule(...)[0], since return value is a tuple!
     '''
     print(
@@ -103,8 +105,8 @@ def check_meeting_room_schedule(room_id, timezone, start, finish):
     except ValueError:
         return (False, "Invalid Meeting room id")
 
-    if start.date() != finish.date():
-        return (False, "Invalid date boundaries")
+    # if start.date() != finish.date():
+    #     return (False, "Invalid date boundaries")
 
     if start >= finish:
         return (False, "Start >= finish")
@@ -112,11 +114,11 @@ def check_meeting_room_schedule(room_id, timezone, start, finish):
     if start.hour < 9 or (finish.hour >= 22 and finish.minute > 0):
         return (False, "Invalid time boundaries")
 
-    if start.date() not in [(datetime.now().astimezone(timezone) + timedelta(days=x)).date() for x in range(15)]:
+    if date_ not in [(datetime.now().astimezone(timezone) + timedelta(days=x)).date() for x in range(15)]:
         return (False, "Invalid start")
 
-    if finish.date() not in [(datetime.now().astimezone(timezone) + timedelta(days=x)).date() for x in range(15)]:
-        return (False, "Invalid finish")
+    # if finish.date() not in [(datetime.now().astimezone(timezone) + timedelta(days=x)).date() for x in range(15)]:
+    #     return (False, "Invalid finish")
 
     rows = Meeting_Room_Schedule.objects.filter(meeting_room_id=room_id)
     if not rows:
