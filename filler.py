@@ -1,6 +1,6 @@
 from MainApp.models import *
 # from django.contrib.auth.models import Group, User
-from datetime import timedelta, date, datetime, timezone
+from datetime import timedelta, datetime, timezone
 import pytz
 # import os
 from random import choice
@@ -74,17 +74,13 @@ def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Roo
     Test this as check_schedule(...)[0], since return value is a tuple!
     '''
     print(
-        f'Checking for {place_type}#{place_id}, {start.strftime("%d/%m/%y %H:%M")}, {finish.strftime("%d/%m/%y %H:%M")}')
+        f'Checking for {place_type}#{place_id}, {start.strftime("%d/%m/%y %H:%M %z")}, {finish.strftime("%d/%m/%y %H:%M %z")}')
     tz = timezone_from_utcoffset(str_utcoffset)
     if not tz:
         return (False, "Invalid utc offset")
 
-    print(
-        f'Local start is {start.strftime("%d/%m/%y %H:%M")}, local finish is {finish.strftime("%d/%m/%y %H:%M")}')
-    start, finish = start.astimezone(
-        timezone.utc), finish.astimezone(timezone.utc)
-    print(
-        f'UTC start is {start.strftime("%d/%m/%y %H:%M")}, UTC finish is {finish.strftime("%d/%m/%y %H:%M")}')
+    if start.date() not in [(datetime.utcnow().astimezone(tz) + timedelta(days=x)).date() for x in range(15)]:
+        return (False, "Invalid date boundaries")
 
     if place_type == 'Workplace':
         try:
@@ -92,8 +88,6 @@ def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Roo
                 return (False, "No such Workplace")
 
             rows = Workplace_Schedule.objects.filter(workplace_id=place_id)
-            if not rows:
-                return (True, "Whole day was free")
 
         except ValueError:
             return (False, "Invalid Workplace id")
@@ -105,8 +99,6 @@ def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Roo
 
             rows = Meeting_Room_Schedule.objects.filter(
                 meeting_room_id=place_id)
-            if not rows:
-                return (True, "Whole day was free")
 
         except ValueError:
             return (False, "Invalid Meeting room id")
@@ -123,18 +115,24 @@ def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Roo
     if start.hour < 9 or (finish.hour >= 22 and finish.minute > 0):
         return (False, "Invalid time boundaries")
 
-    if start not in [(datetime.utcnow().astimezone(tz) + timedelta(days=x)).date() for x in range(15)]:
-        return (False, "Invalid date boundaries")
-
-    rows = Meeting_Room_Schedule.objects.filter(meeting_room_id=room_id)
     if not rows:
         return (True, "Whole day was free")
 
+    print(
+        f'Local start is {start.strftime("%d/%m/%y %H:%M")}, local finish is {finish.strftime("%d/%m/%y %H:%M")}')
+    start, finish = start.astimezone(
+        timezone.utc), finish.astimezone(timezone.utc)
+    print(
+        f'UTC start is {start.strftime("%d/%m/%y %H:%M")}, UTC finish is {finish.strftime("%d/%m/%y %H:%M")}')
+
     for row in rows:
-        if start <= row.start <= finish:
-            return (False, f"Occupied by {row.user} from {row.start} to {row.finish}!")
-        if start <= row.finish <= finish:
-            return (False, f"Occupied by {row.user} from {row.start} to {row.finish}!")
+        if row.start <= start <= row.finish:
+            if start != row.finish:
+                return (False, f"Occupied by {row.user} from {row.start.time()}UTC to {row.finish.time()}UTC!")
+
+        if row.start <= finish <= row.finish:
+            if finish != row.start:
+                return (False, f"Occupied by {row.user} from {row.start.time()}UTC to {row.finish.time()}UTC!")
 
     return (True, "Free")
 
@@ -149,7 +147,7 @@ def fill():
     user = User.objects.create_user(
         username='User1', password='User1', email='example@aventica.ru')
     user_prefs = User_preferences.objects.create(
-        user=user, timezone='Asia/Yekaterinburg, UTC+05:00')
+        user=user, timezone='Asia/Kamchatka, UTC+12:00')
     user_msc = User.objects.create_user(
         username='User2', password='User2', email='example2@aventica.ru')
     user_msc_prefs = User_preferences.objects.create(
@@ -174,7 +172,7 @@ def fill():
             0].timezone.split(',')[0])
         str_utcoffset = u.user_preferences_set.all()[
             0].timezone.split(',')[-1].strip()
-        start = datetime.utcnow().astimezone(timezone) + \
+        start = datetime.now().astimezone(timezone) + \
             timedelta(days=days, hours=hours)
         hours = choice([x for x in range(24)])
         finish = start + timedelta(hours=hours)
@@ -215,15 +213,15 @@ def prep():
     clear_all()
     fill()
     wps = Workplace_Schedule.objects.all().order_by('start')
-    mrs = Meeting_Room_Schedule.objects.all().order_by('start')
+    # mrs = Meeting_Room_Schedule.objects.all().order_by('start')
     # mr = Meeting_Room.objects.all()[0]
-    for i in mrs:
-        timezone = pytz.timezone(i.user.user_preferences_set.all()[
-                                 0].timezone.split(',')[0])
-        print(
-            (f'MR {i.meeting_room}'
-             f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'
-             f'to {i.finish.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'))
+    # for i in mrs:
+    #     timezone = pytz.timezone(i.user.user_preferences_set.all()[
+    #                              0].timezone.split(',')[0])
+    #     print(
+    #         (f'MR {i.meeting_room}'
+    #          f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'
+    #          f'to {i.finish.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'))
 
     for i in wps:
         timezone = pytz.timezone(i.user.user_preferences_set.all()[

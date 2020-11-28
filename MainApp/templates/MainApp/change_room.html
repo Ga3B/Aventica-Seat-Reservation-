@@ -8,7 +8,7 @@
 <div class="title text-center mt-3">
   {% if rooms %}
   <h3>Выберите переговорную комнату</h3>
-  {% elif offices %}
+  {% elif workplaces %}
   <h3>Выберите офис</h3>
   {% endif %}
 </div>
@@ -69,18 +69,18 @@
     {% endfor %}
     {% endif %}
 
-    {% if offices %}
-    {% for office in offices %}
+    {% if workplaces %}
+    {% for workplace in workplaces %}
       <div class="col-md-8 order-md-1">
 
         <div class="card mb-4 shadow-sm">
-          <img src="{% static office.photo.url %}" alt="">
+          <!-- <img src="{% static workplace.photo.url %}" alt=""> -->
           <div class="card-body">
-            <h6>{{ office.name }}</h6>
-            <p class="card-text">{{ office.description|default:"No description" }}</p>
+            <h6>{{ workplace.name }}</h6>
+            <p class="card-text">{{ workplace.description|default:"No description" }}</p>
             <div class="d-flex justify-content-between align-items-center">
               <div class="btn-group">
-                <a type="button" href="{% url 'MainApp:change_seat' 'office' office.id %}" class="btn btn-sm btn-outline-secondary">Далее</a>
+                <a type="button" href="{% url 'MainApp:change_time' 'workplace' workplace.id %}" class="btn btn-sm btn-outline-secondary">Далее</a>
               </div>
               <small class="text-muted">Локация?</small>
             </div>

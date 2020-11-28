@@ -21,17 +21,17 @@
 <div class="card" style="margin-left:20%; margin-right:15%;">
     <div class="content">
         <div class="row">
-            {% if room %}
+            {% if place %}
             <div class="col-md-4">
                 <div class="card m-3 shadow-sm">
-                    <img src="{% static room.photo.url %}" class="img-fluid" alt="">
+                    <!-- <img src="{% static room.photo.url %}" class="img-fluid" alt=""> -->
                     <div class="card-body">
-                        <p class="card-text">{{ room.description }}</p>
+                        <p class="card-text">{{ place.description }}</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
-                                {% for tag in room.tags.all %}
-                                    <a type="button" class="btn btn-sm btn-outline-secondary m-1">{{ tag.name }}</a>
-                                {% endfor %}
+                                <!-- {% for tag in room.tags.all %} -->
+                                    <a type="button" class="btn btn-sm btn-outline-secondary m-1">Здесь были тэги</a>
+                                <!-- {% endfor %} -->
                             </div>
                         </div>
                     </div>
@@ -40,8 +40,8 @@
             <div class="col-md-4">
                 <p>
                 <div class="container">
-                    <h6>{{ room.name }}</h6>
-                    <p> {{ room.location }} </p>
+                    <h6>{{ place.name }}</h6>
+                    <h6>Здесь были этаж и номер</h6>
                     <a>
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-flag-fill" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +52,12 @@
 
                     <form method="post">
                         <div class="form-group mt-5">
-                            <input type="hidden" name="room_id" id="{{ room.id }}">
+                            <input type="hidden" name="place_id" id="{{ place.id }}">
+                            {% if room %}
+                            <input type="hidden" name="place_type" id="Room">
+                            {% elif workplace %}
+                            <input type="hidden" name="place_type" id="Workplace">
+                            {% endif %}
                             <label for="exampleFormControlTextarea1">Комментарий</label>
                             <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                             <label for="date">Выберите дату</label><input type="text" id="date">
@@ -66,53 +71,6 @@
                 </p>
             </div>
             {% endif %}
-
-<!--             {% if office %}
-            <div class="col-md-4">
-                <div class="card m-3 shadow-sm">
-                    <img src="{% static room.photo.url %}" class="img-fluid" alt="">
-                    <div class="card-body">
-                        <p class="card-text">{{ office.description }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                                {% for tag in workplace.tags.all %}
-                                    <a type="button" class="btn btn-sm btn-outline-secondary m-1">{{ tag.name }}</a>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <p>
-                <div class="container">
-                    <h6>{{ office.name }}</h6>
-                    <p> {{ office.location }} </p>
-                    <a>
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-flag-fill" fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12.435 12.435 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A19.626 19.626 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a19.587 19.587 0 0 0 1.349-.476l.019-.007.004-.002h.001" />
-                        </svg>
-                        Мы не храним адреса, надо ли?
-                    </a>
-                    <div class="card mt-3">
-                        <p>тут должен быть дропбокс со временем</p>
-                    </div>
-
-                    <form>
-                        <div class="form-group mt-5">
-                            <label for="exampleFormControlTextarea1">Комментарий</label>
-                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                        </div>
-                        <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#exampleModal">Дальше</button>
-                        {% csrf_token %}
-                    </form>
-                </div>
-                </p>
-            </div>
-            {% endif %}
- -->
         </div>
     </div>
 </div>
@@ -166,12 +124,13 @@
     }
     start_settings = $.extend({}, default_settings);
     start_settings['onClose'] = function(dateText, inst) {
-            // console.log(start.timepicker().val());
+            // console.log($("#time_srtart").timepicker('timezone'));
             $("#time_end").val(dateText);
         }
 
     $(function() {
         $("#date").datepicker({
+            dateFormat: "dd/mm/y",
             minDate: 0,
             maxDate: 14
         });
@@ -187,19 +146,17 @@
         let date = $("#date").val();
         let start = $("#time_start").val();
         let finish = $("#time_end").val();
-        let room_id = $("input[name=room_id]")[0].id;
-        console.log(token, date, start, finish, room_id);
+        let place_id = $("input[name=place_id]")[0].id;
+        let place_type = $("input[name=place_type]")[0].id;
+        // console.log(token, date, start, finish, place_id);
         $.ajax({
           headers: {'X-CSRFToken': token},
           type: 'POST',
           url: "{% url 'MainApp:book' %}",
-          data: {"date": date, "start": start, "finish": finish, "room_id": room_id},
+          data: {"date": date, "start": start, "finish": finish, 
+                 "place_id": place_id, "place_type": place_type},
           success: function(response) {
             console.log(response);
-            // $(".card-title").text(response['name']);
-            // $("#chosen").text(response['name']);
-            // $(".card-text").text(response['description']);
-            // $('span.badge.badge-secondary').text(tags);
           },
           error: function(response) {
             alert("error")

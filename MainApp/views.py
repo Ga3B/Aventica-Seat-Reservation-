@@ -1,11 +1,10 @@
 from json import load, dumps
-from datetime import datetime
+from datetime import datetime, timezone
 from django.shortcuts import render, get_object_or_404
 from .models import *  # Check for possible namespace clashes
 from .forms import Workplace_ScheduleForm, Meeting_Room_ScheduleForm
 from django.http import JsonResponse
-
-# Create your views here.
+from filler import check_place_schedule
 
 
 def index(request):
@@ -13,35 +12,30 @@ def index(request):
     return render(request, 'MainApp/index.html')
 
 
-def booking(request):
-    with open('test_data.json', encoding='utf-8') as f:
-        data = load(f)
-
-    return render(request, 'MainApp/booking.html', {'data': [data]})
-
-
 def change_work(request):
     return render(request, 'MainApp/change_work.html')
 
 
 def change_room(request, show):
-    if show == 'offices':
-        offices = Office.objects.all()
-        return render(request, 'MainApp/change_room.html', {'offices': offices})
+    if show == 'workplaces':
+        workplaces = Workplace.objects.all()
+        return render(request, 'MainApp/change_room.html', {'workplaces': workplaces})
     elif show == 'rooms':
         rooms = Meeting_Room.objects.all()
         return render(request, 'MainApp/change_room.html', {'rooms': rooms})
 
 
-def change_seat(request, place, place_id):
-    return render(request, 'MainApp/change_seat.html')
+# def change_seat(request, place, place_id):
+#     return render(request, 'MainApp/change_seat.html')
 
 
 def change_time(request, place, place_id):
     if place == 'room':
         room = get_object_or_404(Meeting_Room, pk=place_id)
-        form = Meeting_Room_ScheduleForm()
-        return render(request, 'MainApp/change_time.html', {'room': room, 'form': form})
+        return render(request, 'MainApp/change_time.html', {'place': room, 'room': True})
+    elif place == 'workplace':
+        workplace = get_object_or_404(Workplace, pk=place_id)
+        return render(request, 'MainApp/change_time.html', {'place': workplace, 'workplace': True})
 
 
 def my_booking(request):
@@ -55,17 +49,30 @@ def about_booking(request):
 def book(request):
     if request.is_ajax and request.method == "POST":
         # get the form data
-        data = {}
-        data['date'] = request.POST.get('date', '')
-        data['start'] = request.POST.get('start', '')
-        data['finish'] = request.POST.get('finish', '')
-        data['room_id'] = request.POST.get('room_id', '')
-        d = datetime.strptime(data['start'], '%H:%M %z')
+        date = request.POST.get('date', '')
+        start = request.POST.get('start', '')
+        finish = request.POST.get('finish', '')
+        place_id = request.POST.get('place_id', '')
+        place_type = request.POST.get('place_type', '')
 
-        if all([data['date'], data['start'], data['finish'], data['room_id']]):
-            return JsonResponse(dumps(str(d.tzinfo)), safe=False, status=200)
-        else:
+        if not all([date, start, finish, place_id, place_type]):
             return JsonResponse({"error": "400"}, status=400)
+
+        dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M %z')
+        dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M %z')
+        str_utcoffset = 'UTC' + start.split(' ')[-1]
+        res, cause = check_place_schedule(
+            place_id, str_utcoffset, dt_start, dt_finish, place_type)
+        if not res:
+            return JsonResponse({'error': cause}, safe=False, status=400)
+
+        else:
+            Workplace_Schedule.objects.create(workplace_id=place_id, user_id=request.user.id,
+                                              start=dt_start.astimezone(
+                                                  timezone.utc),
+                                              finish=dt_finish.astimezone(timezone.utc))
+            response = f'Booked successfully from {start} to {finish}'
+            return JsonResponse(dumps(response), safe=False, status=200)
 
     # some error occured
     return JsonResponse({"error": ""}, status=400)
