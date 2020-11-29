@@ -13,45 +13,36 @@
   {% endif %}
 </div>
 
-<!-- <div class="progress m-4">
-  <div class="progress-bar" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0"
-    aria-valuemax="100">40%</div>
-</div> -->
+<div class="container mb-3">
 
-<!-- <div class="title text-center mt-3">
-  <p>Выберите место, за которым хотите работать</p>
-</div> -->
+  <div class="row well">
+      <div class="col-lg-4 col-md-4">
+          <div class="form-group">
+              <label for="select111" class="control-label">
+                  <i class="fa fa-sort"></i> Сортировка</label>
+              <select id="select111" class="form-control">
+                  <option>По алфавиту(А-я)</option>
+                  <option>По алфавиту(Я-а)</option>
+              </select>
+          </div>
+      </div>
+      <div class="col-lg-4 col-md-4">
+          <div class="form-group">
+              <label for="select111" class="control-label" style="color:transparent;">
+                  <i class="fa fa-search"></i> Найти</label>
+              <input class="btn btn-primary btn-block btn-raised" type="submit" value="Найти">
+          </div>
+      </div>
+  </div>
+
+</div>
 
 <div class="container">
-  <div class="py-5 text-center"></div>
-  <div class="row">
-    <div class="col-md-4 order-md-2 mb-8">
-      <h4>Сортировка и фильтры</h4>
-      <ul class="list-group mb-3">
-        <li class="list-group-item d-flex justify-content-between lh-condensed">
-          <div>
-            <h6>По возрастанию</h6>
-            <small class="text-muted"> А-я</small>
-          </div>
-        </li>
-        <li class="list-group-item d-flex justify-content-between lh-condensed">
-          <div>
-            <h6>По убыванию</h6>
-            <small class="text-muted"> Я-а</small>
-          </div>
-        </li>
-        <!-- <li class="list-group-item d-flex justify-content-between lh-condensed">
-          <div>
-            <h6>По возрастанию</h6>
-            <small class="text-muted"> что-нибудь</small>
-          </div>
-        </li> -->
-      </ul>
-    </div>
+  <div class=" text-center"></div>
 
     {% if rooms %}
     {% for room in rooms %}
-      <div class="col-md-8 order-md-2">
+     
         <div class="card mb-4 shadow-sm">
           <!-- <img src="{% static room.photo.url %}" alt=""> -->
           <div class="card-body">
@@ -59,8 +50,6 @@
             <p class="card-text">{{ room.description }}</p>
             <div class="d-flex justify-content-between align-items-center">
               <div class="btn-group">
-                <!-- Чтобы вернуть как было - заменить дата-таргет и дата-тоггл на хреф -->
-                <!-- href="{% url 'MainApp:change_time' 'room' room.id %}" -->
                 <a type="button" data-val="{{ room.id }}" data-type="Room"
                 data-toggle="modal" data-target="#bookModal"  class="btn btn-sm btn-outline-secondary" >Далее</a>
                 
@@ -69,14 +58,13 @@
             </div>
           </div>
         </div>
-      </div>
+     
     {% endfor %}
     {% endif %}
 
     {% if workplaces %}
     {% for workplace in workplaces %}
-      <div class="col-md-8 order-md-1">
-
+      
         <div class="card mb-4 shadow-sm">
           <!-- <img src="{% static workplace.photo.url %}" alt=""> -->
           <div class="card-body">
@@ -94,7 +82,7 @@
             </div>
           </div>
         </div>
-      </div>
+      
     {% endfor %}
     {% endif %}
 
@@ -121,7 +109,7 @@
                           <label for="time_start">Время начала</label><input type="text" class="form-control" id="time_start">
                           <label for="time_end">Время конца</label><input type="text" class="form-control" id="time_end">
                       </div>
-                      <button id="book" type="submit" class="btn btn-primary"  data-toggle="modal" data-target="#succesModal">Забронировать</button>
+                      <button id="book" type="submit" class="btn btn-primary"  data-toggle="modal" data-target="#succesModal" >Забронировать</button>
                       {% csrf_token %}
                   </form>
           </div>
@@ -142,7 +130,6 @@
           Ваша заявка принята!
         </div>
         <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
           <a type="button" href="{% url 'MainApp:my_booking' %}" class="btn btn-primary">В мои бронирования</a>
         </div>
       </div>
