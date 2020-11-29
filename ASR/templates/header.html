@@ -44,21 +44,8 @@
           </div>
         </li>
         <li class="nav-item">
-          <a class="nav-link disabled" id="my_work" href="{% url 'MainApp:my_booking' %}">Мои бронирования</a>
+          <a class="nav-link" id="my_work" href="{% url 'MainApp:my_booking' %}">Мои бронирования</a>
         </li>
-        {% if request.user.is_authenticated %}
-        <script>
-          document.getElementById("my_work").className="nav-link";
-        </script>
-        {%endif%}
-
-        <script>
-          var token = /access_token=([^&]+)/.exec(document.location.hash)[1];
-          if (token != null) {
-            console.log("ok");
-            console.log(token);
-          }
-        </script>
         
         {% if request.user.is_authenticated %}
         <li class="nav-item dropdown"  >

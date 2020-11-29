@@ -1,21 +1,25 @@
 from json import load, dumps
 from datetime import datetime, timezone
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import *  # Check for possible namespace clashes
 from .forms import Workplace_ScheduleForm, Meeting_Room_ScheduleForm
 from django.http import JsonResponse
 from filler import check_place_schedule
 
 
+@login_required()
 def index(request):
     # return HttpResponse("test")
     return render(request, 'MainApp/index.html')
 
 
+@login_required()
 def change_work(request):
     return render(request, 'MainApp/change_work.html')
 
 
+@login_required()
 def change_room(request, show):
     if show == 'workplaces':
         workplaces = Workplace.objects.all()
@@ -29,23 +33,27 @@ def change_room(request, show):
 #     return render(request, 'MainApp/change_seat.html')
 
 
-def change_time(request, place, place_id):
-    if place == 'room':
-        room = get_object_or_404(Meeting_Room, pk=place_id)
-        return render(request, 'MainApp/change_time.html', {'place': room, 'room': True})
-    elif place == 'workplace':
-        workplace = get_object_or_404(Workplace, pk=place_id)
-        return render(request, 'MainApp/change_time.html', {'place': workplace, 'workplace': True})
+# @login_required()
+# def change_time(request, place, place_id):
+#     if place == 'room':
+#         room = get_object_or_404(Meeting_Room, pk=place_id)
+#         return render(request, 'MainApp/change_time.html', {'place': room, 'room': True})
+#     elif place == 'workplace':
+#         workplace = get_object_or_404(Workplace, pk=place_id)
+#         return render(request, 'MainApp/change_time.html', {'place': workplace, 'workplace': True})
 
 
+@login_required()
 def my_booking(request):
     return render(request, 'MainApp/my_booking.html')
 
 
+@login_required()
 def about_booking(request):
     return render(request, 'MainApp/about_booking.html')
 
 
+# @login_required()
 def book(request):
     if request.is_ajax and request.method == "POST":
         # get the form data
@@ -72,7 +80,7 @@ def book(request):
                                               start=dt_start.astimezone(
                                                   timezone.utc),
                                               finish=dt_finish.astimezone(timezone.utc))
-            response = f'Booked successfully from {start} to {finish}'
+            response = {'start': start, 'finish': finish, 'date': date}
             return JsonResponse(dumps(response), safe=False, status=200)
 
         elif place_type == 'Room':
@@ -80,7 +88,7 @@ def book(request):
                                                  start=dt_start.astimezone(
                                                      timezone.utc),
                                                  finish=dt_finish.astimezone(timezone.utc))
-            response = f'Booked successfully from {start} to {finish}'
+            response = {'start': start, 'finish': finish, 'date': date}
             return JsonResponse(dumps(response), safe=False, status=200)
 
     # some error occured

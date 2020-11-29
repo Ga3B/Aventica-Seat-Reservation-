@@ -30,7 +30,7 @@ Profile
                 <form action="" method="post">
                     <label for="inputGroupSelect04">Часовой пояс</label>
                     <div class="input-group">
-                        <select class="custom-select" id="inputGroupSelect04"
+                        <select class="custom-select" id="selectTimezone"
                             aria-label="Example select with button addon">
                             <option selected>Выберите из списка</option>
                             <option value="1">One</option>
@@ -38,7 +38,7 @@ Profile
                             <option value="3">Three</option>
                         </select>
                         <div class="input-group-append">
-                            <button class="btn btn-outline-primary" type="submit">Сохранить</button>
+                            <button id="changeTimezone" class="btn btn-outline-primary" type="submit">Сохранить</button>
                         </div>
                     </div>
                     {% csrf_token %}

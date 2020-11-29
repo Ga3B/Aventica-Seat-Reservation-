@@ -18,7 +18,7 @@ class User_preferences(models.Model):
     ]
     user = models.ForeignKey(
         User, on_delete=models.CASCADE)
-    timezone = models.CharField(choices=ru_timezones, max_length=32)
+    timezone = models.CharField(choices=ru_timezones, max_length=32, default=ru_timezones[1][1])
     photo = models.ImageField(blank=True, null=True)
     yandex_mail = models.EmailField(blank=True, null=True)
     sync_on = models.BooleanField(default=False)
