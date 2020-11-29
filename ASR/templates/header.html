@@ -30,12 +30,27 @@
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'MainApp:index' %}">ASR <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link" href="{% url 'MainApp:change_work' %}">Забронировать место</a>
+        </li> -->
+        
+        <li class="nav-item dropdown"  >
+          <a class=" nav-link dropdown-toggle"  href="#" id="dropdown_work" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">Забронировать место</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown08">
+            <a class="dropdown-item" href="{% url 'MainApp:change_room' 'workplaces' %}">Забронировать место</a>
+            <a class="dropdown-item" href="{% url 'MainApp:change_room' 'rooms' %}">Забронировать переговорку</a>
+            <!-- <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>{% url 'profile' %} -->
+          </div>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'MainApp:my_booking' %}">Мои бронирования</a>
+          <a class="nav-link disabled" id="my_work" href="{% url 'MainApp:my_booking' %}">Мои бронирования</a>
         </li>
+        {% if request.user.is_authenticated %}
+        <script>
+          document.getElementById("my_work").className="nav-link";
+        </script>
+        {%endif%}
 
         <script>
           var token = /access_token=([^&]+)/.exec(document.location.hash)[1];
