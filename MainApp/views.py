@@ -61,16 +61,25 @@ def book(request):
         dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M %z')
         dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M %z')
         str_utcoffset = 'UTC' + start.split(' ')[-1]
+
         res, cause = check_place_schedule(
             place_id, str_utcoffset, dt_start, dt_finish, place_type)
         if not res:
             return JsonResponse({'error': cause}, safe=False, status=400)
 
-        else:
+        if place_type == 'Workplace':
             Workplace_Schedule.objects.create(workplace_id=place_id, user_id=request.user.id,
                                               start=dt_start.astimezone(
                                                   timezone.utc),
                                               finish=dt_finish.astimezone(timezone.utc))
+            response = f'Booked successfully from {start} to {finish}'
+            return JsonResponse(dumps(response), safe=False, status=200)
+
+        elif place_type == 'Room':
+            Meeting_Room_Schedule.objects.create(meeting_room_id=place_id, user_id=request.user.id,
+                                                 start=dt_start.astimezone(
+                                                     timezone.utc),
+                                                 finish=dt_finish.astimezone(timezone.utc))
             response = f'Booked successfully from {start} to {finish}'
             return JsonResponse(dumps(response), safe=False, status=200)
 
