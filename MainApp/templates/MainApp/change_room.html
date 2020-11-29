@@ -121,7 +121,7 @@
                           <label for="time_start">Время начала</label><input type="text" class="form-control" id="time_start">
                           <label for="time_end">Время конца</label><input type="text" class="form-control" id="time_end">
                       </div>
-                      <button id="book" type="submit" class="btn btn-primary"  data-toggle="modal" data-target="#succesModal">Забронировать</button>
+                      <button id="book" type="submit" class="btn btn-primary">Забронировать</button>
                       {% csrf_token %}
                   </form>
           </div>
@@ -129,17 +129,17 @@
       </div>
     </div>
 
-    <div class="modal fade" id="succesModal" tabindex="-2" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="afterModal" tabindex="-2" aria-labelledby="afterModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Спасибо!</h5>
+          <h5 class="modal-title" id="afterModalLabel"></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          Ваша заявка принята!
+          <p id="afterModalMessage"></p>
         </div>
         <div class="modal-footer">
           <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
@@ -210,29 +210,38 @@
         // $("#time_end").datepicker("show");
     // });
 
-    $("#book").on('click', function(e) {
-        e.preventDefault();
-        let token = $('[name=csrfmiddlewaretoken]').val();
-        let date = $("#date").val();
-        let start = $("#time_start").val();
-        let finish = $("#time_end").val();
-        let place_id = $("#place_id").val();
-        let place_type = $("#place_type").val();
-        console.log(token, date, start, finish, place_id, place_type);
-        $.ajax({
-          headers: {'X-CSRFToken': token},
-          type: 'POST',
-          url: "{% url 'MainApp:book' %}",
-          data: {"date": date, "start": start, "finish": finish, 
-                 "place_id": place_id, "place_type": place_type},
-          success: function(response) {
-            console.log(response);
-          },
-          error: function(response) {
-            alert("error")
-          }
+        $("#book").on('click', function(e) {
+            e.preventDefault();
+            let token = $('[name=csrfmiddlewaretoken]').val();
+            let date = $("#date").val();
+            let start = $("#time_start").val();
+            let finish = $("#time_end").val();
+            let place_id = $("#place_id").val();
+            let place_type = $("#place_type").val();
+            console.log(token, date, start, finish, place_id, place_type);
+            $.ajax({
+              headers: {'X-CSRFToken': token},
+              type: 'POST',
+              url: "{% url 'MainApp:book' %}",
+              data: {"date": date, "start": start, "finish": finish, 
+                     "place_id": place_id, "place_type": place_type},
+              success: function(response) {
+                console.log(response);
+                $("#afterModalLabel").text("Успех");
+                let msg = `Забронировали с ${start} до ${finish} ${date}`
+                $("#afterModalMessage").text(msg);
+                $("#afterModal").modal('show');
+              },
+              error: function(response) {
+                // alert("error");
+                $("#afterModalLabel").text("Ошибка");
+                // let msg = `Забронировали с ${start} до ${finish} ${date}`
+                $("#afterModalMessage").text(response['responseJSON']['error']);
+                $("#afterModal").find("a").disable();
+                $("#afterModal").modal('show');
+              }
+            });
         });
-    });
     });
 </script>
 
