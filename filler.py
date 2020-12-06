@@ -64,6 +64,22 @@ def timezone_from_utcoffset(str_utcoffset):
     return None
 
 
+def place_shedule_strings(queryset, place_type):
+    strings = []
+    for row in queryset:
+        user_tz = row.user.user_preferences_set.all()[0].timezone
+        start = row.start.time().strftime('%H:%M')
+        finish = row.finish.time().strftime('%H:%M')
+        if place_type == 'Workplace':
+            place_id = row.workplace_id
+        elif place_type == 'Meeting Room':
+            place_id = row.meeting_room_id
+
+        res = f'{place_type}#{place_id} at {row.start.date()} from {start} to {finish} by {row.user.username}, {user_tz}\n'
+        strings.append(res)
+    return strings
+
+
 def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Room'):
     '''
     param room_id (int)
@@ -147,7 +163,7 @@ def fill():
     user = User.objects.create_user(
         username='User1', password='User1', email='example@aventica.ru')
     user_prefs = User_preferences.objects.create(
-        user=user, timezone='Asia/Kamchatka, UTC+12:00')
+        user=user, timezone='Asia/Yekaterinburg, UTC+05:00')
     user_msc = User.objects.create_user(
         username='User2', password='User2', email='example2@aventica.ru')
     user_msc_prefs = User_preferences.objects.create(

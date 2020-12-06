@@ -66,9 +66,12 @@ def book(request):
         if not all([date, start, finish, place_id, place_type]):
             return JsonResponse({"error": "400"}, status=400)
 
-        dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M %z')
-        dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M %z')
-        str_utcoffset = 'UTC' + start.split(' ')[-1]
+        dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M')
+        dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M')
+        # str_utcoffset = 'UTC' + start.split(' ')[-1]
+        str_utcoffset = request.user.user_preferences_set.all()[
+            0].timezone.split(',')[-1].strip()
+        # return JsonResponse(str_utcoffset, safe=False, status=200)
 
         res, cause = check_place_schedule(
             place_id, str_utcoffset, dt_start, dt_finish, place_type)
