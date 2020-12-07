@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from .models import *  # Check for possible namespace clashes
 from .forms import Workplace_ScheduleForm, Meeting_Room_ScheduleForm
 from django.http import JsonResponse
+from django.utils.timezone import activate
+import pytz
 from filler import check_place_schedule
 
 
@@ -29,23 +31,27 @@ def change_room(request, show):
         return render(request, 'MainApp/change_room.html', {'rooms': rooms})
 
 
-# def change_seat(request, place, place_id):
-#     return render(request, 'MainApp/change_seat.html')
-
-
-# @login_required()
-# def change_time(request, place, place_id):
-#     if place == 'room':
-#         room = get_object_or_404(Meeting_Room, pk=place_id)
-#         return render(request, 'MainApp/change_time.html', {'place': room, 'room': True})
-#     elif place == 'workplace':
-#         workplace = get_object_or_404(Workplace, pk=place_id)
-#         return render(request, 'MainApp/change_time.html', {'place': workplace, 'workplace': True})
-
-
 @login_required()
 def my_booking(request):
-    return render(request, 'MainApp/my_booking.html')
+    if request.is_ajax and request.method == "POST":
+        place_id = request.POST.get('place_id', '')
+        place_type = request.POST.get('place_type', '')
+        try:
+            if place_type == 'Room':
+                Meeting_Room_Schedule.objects.get(pk=int(place_id)).delete()
+                # return JsonResponse(dumps(f'Deleted successfully'), safe=False, status=200)
+            elif place_type == 'Workplace':
+                Workplace_Schedule.objects.get(pk=int(place_id)).delete()
+            return JsonResponse(dumps(f'Deleted successfully'), safe=False, status=200)
+        except Exception:
+            return JsonResponse(dumps({'Deletion error': ''}), safe=False, status=400)
+
+    workplaces = Workplace_Schedule.objects.filter(user_id=request.user.id)
+    rooms = Meeting_Room_Schedule.objects.filter(user_id=request.user.id)
+    user_tz = request.user.user_preferences_set.all()[
+        0].timezone.split(',')[0].strip()
+    activate(pytz.timezone(user_tz))
+    return render(request, 'MainApp/my_booking.html', {'rooms': rooms, 'workplaces': workplaces, 'user_tz': user_tz})
 
 
 @login_required()

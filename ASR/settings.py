@@ -117,7 +117,7 @@ SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = config('SOCIAL_AUTH_YANDEX_OAUTH2_SECRET')  #
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -127,6 +127,14 @@ USE_L10N = True
 
 USE_TZ = True
 
+# DATE_INPUT_FORMATS = [
+#     # '2006-10-25', '10/25/2006', '10/25/06', '26-10-2006'
+#     '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%d-%m-%Y',
+#     '%b %d %Y', '%b %d, %Y',            # 'Oct 25 2006', 'Oct 25, 2006'
+#     '%d %b %Y', '%d %b, %Y',            # '25 Oct 2006', '25 Oct, 2006'
+#     '%B %d %Y', '%B %d, %Y',            # 'October 25 2006', 'October 25, 2006'
+#     '%d %B %Y', '%d %B, %Y',            # '25 October 2006', '25 October, 2006'
+# ]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

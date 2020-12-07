@@ -217,7 +217,7 @@
             let finish = $("#time_end").val();
             let place_id = $("#place_id").val();
             let place_type = $("#place_type").val();
-            console.log(token, date, start, finish, place_id, place_type);
+            // console.log(token, date, start, finish, place_id, place_type);
             $.ajax({
               headers: {'X-CSRFToken': token},
               type: 'POST',

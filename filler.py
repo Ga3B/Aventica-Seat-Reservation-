@@ -75,7 +75,7 @@ def place_shedule_strings(queryset, place_type):
         elif place_type == 'Meeting Room':
             place_id = row.meeting_room_id
 
-        res = f'{place_type}#{place_id} at {row.start.date()} from {start} to {finish} by {row.user.username}, {user_tz}\n'
+        res = f'{place_type}#{place_id} at {row.start.date()} from {start} to {finish} by {row.user.username}, {user_tz}'
         strings.append(res)
     return strings
 
