@@ -7,4 +7,5 @@ ASRvenv
 *.sublime-workspace
 *.xml
 *.iml
+.vscode
 migrations
