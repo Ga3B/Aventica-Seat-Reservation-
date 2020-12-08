@@ -58,7 +58,7 @@ def about_booking(request):
     return render(request, 'MainApp/about_booking.html')
 
 
-# @login_required()
+@login_required()
 def book(request):
     if request.is_ajax and request.method == "POST":
         # get the form data
@@ -74,8 +74,10 @@ def book(request):
         dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M')
         dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M')
         # str_utcoffset = 'UTC' + start.split(' ')[-1]
-        str_utcoffset = request.user.user_preferences.timezone.split(',')[-1].strip()
-        # return JsonResponse(str_utcoffset, safe=False, status=200)
+        try:
+            str_utcoffset = request.user.user_preferences.timezone.split(',')[-1].strip()
+        except Exception:
+            return JsonResponse(dumps({'error': 'User has no timezone'}), safe=False, status=400)
 
         res, cause = check_place_schedule(
             place_id, str_utcoffset, dt_start, dt_finish, place_type)
@@ -87,7 +89,7 @@ def book(request):
                                               start=dt_start.astimezone(
                                                   timezone.utc),
                                               finish=dt_finish.astimezone(timezone.utc))
-            response = {'start': start, 'finish': finish, 'date': date}
+            response = {'start': start, 'finish': finish, 'date': date, 'timezone': str_utcoffset}
             return JsonResponse(dumps(response), safe=False, status=200)
 
         elif place_type == 'Room':
@@ -95,7 +97,7 @@ def book(request):
                                                  start=dt_start.astimezone(
                                                      timezone.utc),
                                                  finish=dt_finish.astimezone(timezone.utc))
-            response = {'start': start, 'finish': finish, 'date': date}
+            response = {'start': start, 'finish': finish, 'date': date, 'timezone': str_utcoffset}
             return JsonResponse(dumps(response), safe=False, status=200)
 
     # some error occured

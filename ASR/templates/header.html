@@ -27,6 +27,15 @@
 
     <div class="collapse navbar-collapse justify-content-md-center" id="navbarsExample08">
       <ul class="navbar-nav">
+        {% if request.user.is_authenticated and not request.user.user_preferences.timezone %}
+        <li class="nav-item">
+          <button class="btn btn-danger btn-sm" type="button">
+            <a class="nav-link" href="{% url 'profile' %}">
+              Часовой пояс не выбран!
+            <span class="nav-link"></span></a>
+          </button>
+        </li>
+        {% endif %}
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'MainApp:index' %}">ASR <span class="sr-only">(current)</span></a>
         </li>

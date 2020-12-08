@@ -3,18 +3,21 @@ from django.shortcuts import render
 # from MainApp.models import User_preferences
 # from MainApp.forms import User_preferencesFrom
 from django.http import HttpResponseRedirect, JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 # from django.contrib import messages
 # from django.urls import reverse
-from MainApp.models import Workplace_Schedule, Meeting_Room_Schedule, User
+from MainApp.models import Workplace_Schedule, Meeting_Room_Schedule, User, User_preferences
 from datetime import datetime, timezone
 from filler import check_place_schedule, place_shedule_strings
 
 
+@login_required()
 def settings(request):
     return render(request, 'settings.html')
 
 
+@login_required()
 def profile(request):
     if request.is_ajax and request.method == "POST":
         timezones = [
@@ -38,18 +41,26 @@ def profile(request):
         ups.save()
         return JsonResponse(dumps(f'timezone changed to {new_timezone}'), safe=False, status=200)
 
-    timezone = request.user.user_preferences.timezone
+    try:
+        timezone = request.user.user_preferences.timezone
+    except Exception:
+        ups = User_preferences.objects.create(
+            user=request.user, timezone='Asia/Yekaterinburg, UTC+05:00')
+        timezone = ups.timezone
     return render(request, "profile.html", {"timezone": timezone})
 
 
+@login_required()
 def notifications_settings(request):
     return render(request, 'notifications_settings.html')
 
 
+@login_required()
 def sign_in(request):
     return render(request, 'sign_in.html')
 
 
+@login_required()
 def sign_up(request):
     return render(request, 'sign_up.html')
 
@@ -113,7 +124,8 @@ def telega_fetch(request):
             if place_type == 'Room':
                 mrs = Meeting_Room_Schedule.objects.all().order_by('start')
                 if date:
-                    mrs = mrs.filter(start__date=datetime.strptime(date, '%d/%m/%y').date())
+                    mrs = mrs.filter(start__date=datetime.strptime(
+                        date, '%d/%m/%y').date())
                 if place_id:
                     mrs = mrs.filter(meeting_room_id=place_id)
                 response = place_shedule_strings(mrs, 'Meeting Room')
@@ -122,7 +134,8 @@ def telega_fetch(request):
             elif place_type == 'Workplace':
                 wps = Workplace_Schedule.objects.all().order_by('start')
                 if date:
-                    wps = wps.filter(start__date=datetime.strptime(date, '%d/%m/%y').date())
+                    wps = wps.filter(start__date=datetime.strptime(
+                        date, '%d/%m/%y').date())
                 if place_id:
                     wps = wps.filter(workplace_id=place_id)
                 response = place_shedule_strings(wps, 'Workplace')

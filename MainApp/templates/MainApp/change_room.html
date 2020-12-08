@@ -50,7 +50,7 @@
                 <a type="button" data-val="{{ workplace.id }}" data-type="Workplace"
                 data-toggle="modal" data-target="#bookModal"  class="btn btn-sm btn-outline-secondary" >Далее</a>
               </div>
-              <small class="text-muted">Локация?</small>
+              <!-- <small class="text-muted">Локация?</small> -->
             </div>
           </div>
         </div>
@@ -73,9 +73,6 @@
                       <div class="form-group mt-5">
                           <input type="hidden" id="place_id">
                           <input type="hidden" id="place_type">
-
-                          <!-- <label name="place_type"></label> -->
-                          <!-- <label name="place_id"></label> -->
 
                           <label for="date" >Выберите дату</label><input type="text" class="form-control" id="date">
                           <label for="time_start">Время начала</label><input type="text" class="form-control" id="time_start">
@@ -173,6 +170,7 @@
                 $("#afterModalLabel").text("Успех");
                 let msg = `Забронировали с ${start} до ${finish} ${date}`
                 $("#afterModalMessage").text(msg);
+                $("#afterModal").find("a").show();
                 $("#afterModal").modal('show');
               },
               error: function(response) {
