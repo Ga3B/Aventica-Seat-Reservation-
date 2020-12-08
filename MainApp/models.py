@@ -16,7 +16,7 @@ class User_preferences(models.Model):
         (11, 'Asia/Sakhalin, UTC+11:00'),
         (12, 'Asia/Kamchatka, UTC+12:00')
     ]
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User, on_delete=models.CASCADE)
     timezone = models.CharField(choices=ru_timezones, max_length=32, default=ru_timezones[1][1])
     photo = models.ImageField(blank=True, null=True)

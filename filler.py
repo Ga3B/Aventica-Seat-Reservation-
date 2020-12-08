@@ -67,7 +67,7 @@ def timezone_from_utcoffset(str_utcoffset):
 def place_shedule_strings(queryset, place_type):
     strings = []
     for row in queryset:
-        user_tz = row.user.user_preferences_set.all()[0].timezone
+        user_tz = row.user.user_preferences.timezone
         start = row.start.time().strftime('%H:%M')
         finish = row.finish.time().strftime('%H:%M')
         if place_type == 'Workplace':
@@ -184,10 +184,8 @@ def fill():
         days = choice([x for x in range(15)])
         hours = choice([x for x in range(24)])
         u = choice([user, user_msc])
-        timezone = pytz.timezone(u.user_preferences_set.all()[
-            0].timezone.split(',')[0])
-        str_utcoffset = u.user_preferences_set.all()[
-            0].timezone.split(',')[-1].strip()
+        timezone = pytz.timezone(u.user_preferences.timezone.split(',')[0])
+        str_utcoffset = u.user_preferences.timezone.split(',')[-1].strip()
         start = datetime.now().astimezone(timezone) + \
             timedelta(days=days, hours=hours)
         hours = choice([x for x in range(24)])
@@ -206,10 +204,8 @@ def fill():
         days = choice([x for x in range(15)])
         hours = choice([x for x in range(24)])
         u = choice([user, user_msc])
-        timezone = pytz.timezone(u.user_preferences_set.all()[
-            0].timezone.split(',')[0])
-        str_utcoffset = u.user_preferences_set.all()[
-            0].timezone.split(',')[-1].strip()
+        timezone = pytz.timezone(u.user_preferences.timezone.split(',')[0])
+        str_utcoffset = u.user_preferences.timezone.split(',')[-1].strip()
         start = datetime.utcnow().astimezone(timezone) + \
             timedelta(days=days, hours=hours)
         hours = choice([x for x in range(24)])
@@ -232,16 +228,14 @@ def prep():
     # mrs = Meeting_Room_Schedule.objects.all().order_by('start')
     # mr = Meeting_Room.objects.all()[0]
     # for i in mrs:
-    #     timezone = pytz.timezone(i.user.user_preferences_set.all()[
-    #                              0].timezone.split(',')[0])
+    #     timezone = pytz.timezone(i.user.user_preferences.timezone.split(',')[0])
     #     print(
     #         (f'MR {i.meeting_room}'
     #          f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'
     #          f'to {i.finish.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'))
 
     for i in wps:
-        timezone = pytz.timezone(i.user.user_preferences_set.all()[
-                                 0].timezone.split(',')[0])
+        timezone = pytz.timezone(i.user.user_preferences.timezone.split(',')[0])
         print(
             (f'MR {i.workplace}'
              f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'

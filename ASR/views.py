@@ -33,12 +33,12 @@ def profile(request):
         new_timezone = request.POST.get('ntz', '')
         if new_timezone not in timezones:
             return JsonResponse({"error": "Invalid timezone"}, status=400)
-        ups = request.user.user_preferences_set.all()[0]
+        ups = request.user.user_preferences
         ups.timezone = new_timezone
         ups.save()
         return JsonResponse(dumps(f'timezone changed to {new_timezone}'), safe=False, status=200)
 
-    timezone = request.user.user_preferences_set.all()[0].timezone
+    timezone = request.user.user_preferences.timezone
     return render(request, "profile.html", {"timezone": timezone})
 
 
@@ -73,10 +73,8 @@ def telega_book(request):
         dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M')
         # str_utcoffset = 'UTC' + start.split(' ')[-1]
         user = User.objects.filter(username=username)[0]
-        str_utcoffset = user.user_preferences_set.all()[
-            0].timezone.split(',')[-1].strip()
-        user_tz = user.user_preferences_set.all()[
-            0].timezone.split(',')[0].strip()
+        str_utcoffset = user.user_preferences.timezone.split(',')[-1].strip()
+        user_tz = user.user_preferences.timezone.split(',')[0].strip()
 
         res, cause = check_place_schedule(
             place_id, str_utcoffset, dt_start, dt_finish, place_type)

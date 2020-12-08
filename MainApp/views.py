@@ -46,10 +46,9 @@ def my_booking(request):
         except Exception:
             return JsonResponse(dumps({'Deletion error': ''}), safe=False, status=400)
 
-    workplaces = Workplace_Schedule.objects.filter(user_id=request.user.id)
-    rooms = Meeting_Room_Schedule.objects.filter(user_id=request.user.id)
-    user_tz = request.user.user_preferences_set.all()[
-        0].timezone.split(',')[0].strip()
+    workplaces = Workplace_Schedule.objects.filter(user_id=request.user.id).order_by('start')
+    rooms = Meeting_Room_Schedule.objects.filter(user_id=request.user.id).order_by('start')
+    user_tz = request.user.user_preferences.timezone.split(',')[0].strip()
     activate(pytz.timezone(user_tz))
     return render(request, 'MainApp/my_booking.html', {'rooms': rooms, 'workplaces': workplaces, 'user_tz': user_tz})
 
@@ -75,8 +74,7 @@ def book(request):
         dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M')
         dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M')
         # str_utcoffset = 'UTC' + start.split(' ')[-1]
-        str_utcoffset = request.user.user_preferences_set.all()[
-            0].timezone.split(',')[-1].strip()
+        str_utcoffset = request.user.user_preferences.timezone.split(',')[-1].strip()
         # return JsonResponse(str_utcoffset, safe=False, status=200)
 
         res, cause = check_place_schedule(
