@@ -41,8 +41,10 @@ def my_booking(request):
         except Exception:
             return JsonResponse(dumps({'Deletion error': ''}), safe=False, status=400)
 
-    workplaces = Workplace_Schedule.objects.filter(user_id=request.user.id).order_by('start')
-    rooms = Meeting_Room_Schedule.objects.filter(user_id=request.user.id).order_by('start')
+    workplaces = Workplace_Schedule.objects.filter(
+        user_id=request.user.id).order_by('start')
+    rooms = Meeting_Room_Schedule.objects.filter(
+        user_id=request.user.id).order_by('start')
     user_tz = request.user.user_preferences.timezone.split(',')[0].strip()
     activate(pytz.timezone(user_tz))
     return render(request, 'MainApp/my_booking.html', {'rooms': rooms, 'workplaces': workplaces, 'user_tz': user_tz})
@@ -65,7 +67,8 @@ def book(request):
         dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M')
         # str_utcoffset = 'UTC' + start.split(' ')[-1]
         try:
-            str_utcoffset = request.user.user_preferences.timezone.split(',')[-1].strip()
+            str_utcoffset = request.user.user_preferences.timezone.split(
+                ',')[-1].strip()
         except Exception:
             return JsonResponse(dumps({'error': 'User has no timezone'}), safe=False, status=400)
 
@@ -79,7 +82,8 @@ def book(request):
                                               start=dt_start.astimezone(
                                                   timezone.utc),
                                               finish=dt_finish.astimezone(timezone.utc))
-            response = {'start': start, 'finish': finish, 'date': date, 'timezone': str_utcoffset}
+            response = {'start': start, 'finish': finish,
+                        'date': date, 'timezone': str_utcoffset}
             return JsonResponse(dumps(response), safe=False, status=200)
 
         elif place_type == 'Room':
@@ -87,8 +91,9 @@ def book(request):
                                                  start=dt_start.astimezone(
                                                      timezone.utc),
                                                  finish=dt_finish.astimezone(timezone.utc))
-            response = {'start': start, 'finish': finish, 'date': date, 'timezone': str_utcoffset}
+            response = {'start': start, 'finish': finish,
+                        'date': date, 'timezone': str_utcoffset}
             return JsonResponse(dumps(response), safe=False, status=200)
 
     # some error occured
-    return JsonResponse({"error": ""}, status=400)
+    return JsonResponse({"error": "unknown error"}, status=400)
