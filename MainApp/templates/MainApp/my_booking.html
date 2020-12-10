@@ -26,7 +26,7 @@ Placeholder Title
               <a type="button" data-val="{{ room.id }}" data-type="Room" data-toggle="modal"
                 data-target="#confirmDelete" class="btn btn-sm btn-danger">Отменить</a>
               <a type="button" data-val="{{ room.id }}" data-type="Room" data-toggle="modal"
-                data-target="#getSchedule" class="btn btn-sm btn-secondary ml-1">Расписание</a>
+                data-target="#confirmSchedule" class="btn btn-sm btn-secondary ml-1">Расписание</a>
             </div>
             <small class="text-muted">{{ room.start|date:"d/m/y"}}</small>
           </div>
@@ -50,7 +50,7 @@ Placeholder Title
                 data-target="#confirmDelete" class="btn btn-sm btn-danger">Отменить</a>
 
               <a type="button" data-val="{{ workplace.id }}" data-type="Room" data-toggle="modal"
-                data-target="#getSchedule" class="btn btn-sm btn-secondary ml-1">Расписание</a>
+                data-target="#confirmSchedule" class="btn btn-sm btn-secondary ml-1">Расписание</a>
             </div>
             <small class="text-muted">{{ workplace.start|date:"d/m/y"}}</small>
           </div>
@@ -96,11 +96,9 @@ Placeholder Title
           <div class="modal-body">
             <p>Выберите дни, для установки расписания</p>
 
-
           <div class="container">
+            <p>------------- week 1 -----------</p>
             <div class="row m-1">
-
-              
               <div class="col m-1">
                 <div class="btn-group-toggle" data-toggle="buttons">
                   <label class="btn btn-secondary active">
@@ -109,52 +107,9 @@ Placeholder Title
                 </div>
               </div>
 
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day2" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day3" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day4" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day5" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day6" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-
-
             </div>
-            <p>------------- 2 week -----------</p>
+            <p>------------- week 2 -----------</p>
             <div class="row m-1">
-
               <div class="col m-1">
                 <div class="btn-group-toggle" data-toggle="buttons">
                   <label class="btn btn-secondary active">
@@ -162,48 +117,6 @@ Placeholder Title
                   </label>
                 </div>
               </div>
-
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day8" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day9" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day10" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day11" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-              <div class="col m-1">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-secondary active">
-                    <input type="checkbox" id="day12" checked> Checked
-                  </label>
-                </div>
-              </div>
-
-
 
             </div>
           </div>
@@ -232,19 +145,11 @@ Placeholder Title
     $('#confirmDelete').on('show.bs.modal', function (event) {
       place_id = $(event.relatedTarget).data('val');
       place_type = $(event.relatedTarget).data('type');
-      // console.log(place_type, place_id);
-      // $(this).find("label[name=place_id]").text(place_id);
-      // $(this).find("label[name=place_type]").text(place_type);
-      // $(this).find("#place_id").val(place_id);
-      // $(this).find("#place_type").val(place_type);
     });
 
     $("#deleteBooked").on('click', function (e) {
       e.preventDefault();
       let token = $('[name=csrfmiddlewaretoken]').val();
-      // let place_id = $("#place_id").val();
-      // let place_type = $("#place_type").val();
-      // console.log(token, date, start, finish, place_id, place_type);
       $.ajax({
         headers: { 'X-CSRFToken': token },
         type: 'POST',
@@ -304,41 +209,9 @@ Placeholder Title
       });
     });
 
-
   ///
   //for get schedule for 2 week
   ///
-  $("#getSchedule").on('click', function (e) {
-      e.preventDefault();
-      let token = $('[name=csrfmiddlewaretoken]').val();
-      // let place_id = $("#place_id").val();
-      // let place_type = $("#place_type").val();
-      // console.log(token, date, start, finish, place_id, place_type);
-      $.ajax({
-        headers: { 'X-CSRFToken': token },
-        type: 'POST',
-        url: "{% url 'MainApp:my_booking' %}",
-        data: { "place_id": place_id, "place_type": place_type },
-        success: function (response) {
-          console.log(response);
-          alert('Удалено');
-          // $("#afterModalLabel").text("Успех");
-          // let msg = `Забронировали с ${start} до ${finish} ${date}`
-          // $("#afterModalMessage").text(msg);
-          // $("#afterModal").modal('show');
-          location.reload();
-        },
-        error: function (response) {
-          alert("Ошибка при установке расписания");
-          // $("#afterModalLabel").text("Ошибка");
-          // let msg = `Забронировали с ${start} до ${finish} ${date}`
-          // $("#afterModalMessage").text(response['responseJSON']['error']);
-          // $("#afterModal").find("a").hide();
-          // $("#afterModal").modal('show');
-        }
-      });
-    });
-
   });
 </script>
 

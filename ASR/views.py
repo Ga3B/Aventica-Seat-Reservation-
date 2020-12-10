@@ -128,6 +128,8 @@ def telega_fetch(request):
                         date, '%d/%m/%y').date())
                 if place_id:
                     mrs = mrs.filter(meeting_room_id=place_id)
+                if username:
+                    mrs = mrs.filter(user__username=username)
                 response = place_shedule_strings(mrs, 'Meeting Room')
                 return JsonResponse(dumps(response), safe=False, status=200)
 
@@ -138,6 +140,8 @@ def telega_fetch(request):
                         date, '%d/%m/%y').date())
                 if place_id:
                     wps = wps.filter(workplace_id=place_id)
+                if username:
+                    mrs = mrs.filter(user__username=username)
                 response = place_shedule_strings(wps, 'Workplace')
                 return JsonResponse(dumps(response), safe=False, status=200)
 

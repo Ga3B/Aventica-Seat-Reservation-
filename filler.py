@@ -67,7 +67,11 @@ def timezone_from_utcoffset(str_utcoffset):
 def place_shedule_strings(queryset, place_type):
     strings = []
     for row in queryset:
-        user_tz = row.user.user_preferences.timezone
+        try:
+            user_tz = row.user.user_preferences.timezone
+        except Exception:
+            strings.append(f'User {row.user} has no User_preferences!')
+            continue
         start = row.start.time().strftime('%H:%M')
         finish = row.finish.time().strftime('%H:%M')
         if place_type == 'Workplace':

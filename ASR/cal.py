@@ -26,6 +26,6 @@ book_url = 'http://127.0.0.1:8000/telega/book'
 fetch_url = 'http://127.0.0.1:8000/telega/fetch'
 
 # Код ответа
-response = requests.post(book_url, data)
+# response = requests.post(book_url, data)
 # JSON ответа
-print(loads(response.json()))
+# print(loads(response.json()))
