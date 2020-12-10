@@ -17,11 +17,6 @@ def index(request):
 
 
 @login_required()
-def change_work(request):
-    return render(request, 'MainApp/change_work.html')
-
-
-@login_required()
 def change_room(request, show):
     if show == 'workplaces':
         workplaces = Workplace.objects.all()
@@ -51,11 +46,6 @@ def my_booking(request):
     user_tz = request.user.user_preferences.timezone.split(',')[0].strip()
     activate(pytz.timezone(user_tz))
     return render(request, 'MainApp/my_booking.html', {'rooms': rooms, 'workplaces': workplaces, 'user_tz': user_tz})
-
-
-@login_required()
-def about_booking(request):
-    return render(request, 'MainApp/about_booking.html')
 
 
 @login_required()

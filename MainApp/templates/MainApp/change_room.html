@@ -1,7 +1,7 @@
 {% extends 'header.html' %}
 {% load static %}
 {% block title %}
-  Placeholder Title
+  Booking
 {% endblock %}
 {% block content %}
 
@@ -40,7 +40,6 @@
     {% if workplaces %}
     {% for workplace in workplaces %}
       <div class="col-md-8 order-md-1">
-
         <div class="card mb-4 shadow-sm">
           <div class="card-body">
             <h6>{{ workplace.name }}</h6>
@@ -77,6 +76,32 @@
                           <label for="date" >Выберите дату</label><input type="text" class="form-control" id="date">
                           <label for="time_start">Время начала</label><input type="text" class="form-control" id="time_start">
                           <label for="time_end">Время конца</label><input type="text" class="form-control" id="time_end">
+                          <!-- <label for="date_range">Повторы</label><input type="text" class="form-control" id="date_range"> -->
+                          
+                              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                              <label class="form-check-label" for="defaultCheck1">
+                                Даты здесь?
+                              </label><br>
+                              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                              <label class="form-check-label" for="defaultCheck1">
+                                Даты здесь?
+                              </label><br>
+                              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                              <label class="form-check-label" for="defaultCheck1">
+                                Даты здесь?
+                              </label><br>
+                              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                              <label class="form-check-label" for="defaultCheck1">
+                                Даты здесь?
+                              </label><br>
+                              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                              <label class="form-check-label" for="defaultCheck1">
+                                Даты здесь?
+                              </label><br>
+                              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                              <label class="form-check-label" for="defaultCheck1">
+                                Даты здесь?
+                              </label>
                       </div>
                       <button id="book" type="submit" class="btn btn-primary">Забронировать</button>
                       {% csrf_token %}
@@ -99,7 +124,6 @@
           <p id="afterModalMessage"></p>
         </div>
         <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
           <a type="button" href="{% url 'MainApp:my_booking' %}" class="btn btn-primary">В мои бронирования</a>
         </div>
       </div>
@@ -132,6 +156,8 @@
         stepMinute: 15,
         hourMin: 9,
         hourMax: 21,
+        hour: 9,
+        minute: 0,
         }
         start_settings = $.extend({}, default_settings);
         start_settings['onClose'] = function(dateText, inst) {

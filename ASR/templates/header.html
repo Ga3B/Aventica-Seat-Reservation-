@@ -39,9 +39,6 @@
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'MainApp:index' %}">ASR <span class="sr-only">(current)</span></a>
         </li>
-        <!-- <li class="nav-item">
-          <a class="nav-link" href="{% url 'MainApp:change_work' %}">Забронировать место</a>
-        </li> -->
         
         <li class="nav-item dropdown"  >
           <a class=" nav-link dropdown-toggle"  href="#" id="dropdown_work" data-toggle="dropdown" aria-haspopup="true"
@@ -49,7 +46,6 @@
           <div class="dropdown-menu" aria-labelledby="dropdown08">
             <a class="dropdown-item" href="{% url 'MainApp:change_room' 'workplaces' %}">Забронировать место</a>
             <a class="dropdown-item" href="{% url 'MainApp:change_room' 'rooms' %}">Забронировать переговорку</a>
-            <!-- <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>{% url 'profile' %} -->
           </div>
         </li>
         <li class="nav-item">
@@ -63,7 +59,7 @@
           <div class="dropdown-menu" aria-labelledby="dropdown08">
             <a class="dropdown-item" href="{% url 'profile' %}">Мой профиль</a>
             <a class="dropdown-item" href="#">Что-то еще</a>
-            <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a><!-- {% url 'profile' %} -->
+            <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>
           </div>
         </li>
         {% else %}
