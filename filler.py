@@ -76,11 +76,14 @@ def place_shedule_strings(queryset, place_type):
         finish = row.finish.time().strftime('%H:%M')
         if place_type == 'Workplace':
             place_id = row.workplace_id
+            place_name=row.workplace.name
         elif place_type == 'Meeting Room':
             place_id = row.meeting_room_id
+            place_name = row.meeting_room.name
 
         res={}
         res['place_type']=place_type
+        res['place_name']=place_name
         res['place_id']=place_id
         res['date']=row.start.date().strftime('%d/%m/%y')
         res['start']=start
@@ -89,8 +92,8 @@ def place_shedule_strings(queryset, place_type):
         res['timezone']=user_tz
 
         # res = f'{place_type}#{place_id} at {row.start.date()} from {start} to {finish} by {row.user.username}, {user_tz}'
-        # strings.append(res)
-    return res #strings
+        strings.append(res)
+    return strings
 
 
 def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Room'):
