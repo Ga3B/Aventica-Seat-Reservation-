@@ -64,6 +64,17 @@ def timezone_from_utcoffset(str_utcoffset):
     return None
 
 
+def place_strings(queryset, place_type):
+    strings = []
+    for row in queryset:
+        place_name = row.name
+        res = {'place_name': place_name}
+        strings.append(res)
+    return strings
+
+
+
+
 def place_shedule_strings(queryset, place_type):
     strings = []
     for row in queryset:
@@ -76,21 +87,14 @@ def place_shedule_strings(queryset, place_type):
         finish = row.finish.time().strftime('%H:%M')
         if place_type == 'Workplace':
             place_id = row.workplace_id
-            place_name=row.workplace.name
+            place_name = row.workplace.name
         elif place_type == 'Meeting Room':
             place_id = row.meeting_room_id
             place_name = row.meeting_room.name
 
-        res={}
-        res['place_type']=place_type
-        res['place_name']=place_name
-        res['place_id']=place_id
-        res['date']=row.start.date().strftime('%d/%m/%y')
-        res['start']=start
-        res['finish']=finish
-        res['username']=row.user.username
-        res['timezone']=user_tz
-
+        res = {'place_type': place_type, 'place_name': place_name, 'place_id': place_id,
+               'date': row.start.date().strftime('%d/%m/%y'), 'start': start, 'finish': finish,
+               'username': row.user.username, 'timezone': user_tz}
         # res = f'{place_type}#{place_id} at {row.start.date()} from {start} to {finish} by {row.user.username}, {user_tz}'
         strings.append(res)
     return strings
@@ -170,7 +174,6 @@ def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Roo
 
 
 def fill():
-
     # call_command('makemigrations')
     # call_command('migrate')
     # clear_all()
@@ -203,7 +206,7 @@ def fill():
         timezone = pytz.timezone(u.user_preferences.timezone.split(',')[0])
         str_utcoffset = u.user_preferences.timezone.split(',')[-1].strip()
         start = datetime.now().astimezone(timezone) + \
-            timedelta(days=days, hours=hours)
+                timedelta(days=days, hours=hours)
         hours = choice([x for x in range(24)])
         finish = start + timedelta(hours=hours)
         wp = workplaces[choice([x for x in range(7)])]
@@ -223,7 +226,7 @@ def fill():
         timezone = pytz.timezone(u.user_preferences.timezone.split(',')[0])
         str_utcoffset = u.user_preferences.timezone.split(',')[-1].strip()
         start = datetime.utcnow().astimezone(timezone) + \
-            timedelta(days=days, hours=hours)
+                timedelta(days=days, hours=hours)
         hours = choice([x for x in range(24)])
         finish = start + timedelta(hours=hours)
         mr = choice([mr1, mr2])
@@ -257,7 +260,6 @@ def prep():
             (f'MR {i.workplace}'
              f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'
              f'to {i.finish.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'))
-
 
 # if __name__ == '__main__':
 #     clear_all()
