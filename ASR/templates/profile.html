@@ -52,6 +52,21 @@ Profile
                     {% csrf_token %}
                 </form>
             </div>
+
+            <div class="container mt-3">
+                <form action="" method="post">
+                    <label for="selectPassword">Пароль приложения, для отправки событий в календарь
+                        <a href="https://yandex.ru/support/passport/authorization/app-passwords.html">(Как его получить?)</a></label>
+                    <div class="input-group">
+
+                     <input type="text" class="form-control" id="selectPassword">
+                        <div class="input-group-append">
+                            <button id="changeEmail" class="btn btn-outline-primary" type="submit">Сохранить</button>
+                        </div>
+                    </div>
+                    {% csrf_token %}
+                </form>
+            </div>
         </div>
     </li>
 

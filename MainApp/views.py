@@ -8,6 +8,8 @@ from django.http import JsonResponse
 from django.utils.timezone import activate
 import pytz
 from filler import check_place_schedule
+import caldav as caldav
+
 
 
 @login_required()
@@ -65,6 +67,12 @@ def book(request):
 
         dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M')
         dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M')
+        # ******************
+        print(start)
+        event_date=datetime.strptime(date,"%Y%m%d")
+        event_start=datetime.strptime(start,"%H%M%S")
+        event_finish=datetime.strptime(finish,"%H%M%S")
+        # ******************
         # str_utcoffset = 'UTC' + start.split(' ')[-1]
         try:
             str_utcoffset = request.user.user_preferences.timezone.split(
@@ -84,6 +92,7 @@ def book(request):
                                               finish=dt_finish.astimezone(timezone.utc))
             response = {'start': start, 'finish': finish,
                         'date': date, 'timezone': str_utcoffset}
+            send_event(event_date,'Workplace',event_start,event_finish,'test4864@yandex.ru','sihcmwvranazjwxo')
             return JsonResponse(dumps(response), safe=False, status=200)
 
         elif place_type == 'Room':
@@ -93,7 +102,39 @@ def book(request):
                                                  finish=dt_finish.astimezone(timezone.utc))
             response = {'start': start, 'finish': finish,
                         'date': date, 'timezone': str_utcoffset}
+            send_event(date, 'Room', start, finish, 'test4864@yandex.ru', 'sihcmwvranazjwxo')
             return JsonResponse(dumps(response), safe=False, status=200)
 
     # some error occured
     return JsonResponse({"error": "unknown error"}, status=400)
+
+
+def send_event(date, room, start, finish, username, password):
+    client = caldav.DAVClient(url='https://caldav.yandex.ru/',
+                              username=username, password=password)
+    my_principal = client.principal()
+    calendars = my_principal.calendars()
+
+    now = datetime.now()
+    date_now = now.strftime("%Y%m%d")
+    time_now = now.strftime("%H%M%S")
+    #
+    # date=date.date().strftime("%Y%m%d")
+    # start=start.date().strftime("%H%M%S")
+    # finish=finish.date().strftime("%H%M%S")
+
+    message_events = f"""BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Example Corp.//CalDAV Client//EN
+BEGIN:VEVENT
+UID:{date_now}T{time_now}Z-{username}
+DTSTAMP:{date}T{start}Z
+DTSTART:{date}T{start}Z
+DTEND:{date}T{finish}Z
+RRULE:FREQ=YEARLY
+SUMMARY:Посетить "{room}"
+END:VEVENT
+END:VCALENDAR
+"""
+    calendars[0].save_event(
+        message_events.format(now=now, user=username, date=date, start=start, finish=finish, room=room))
