@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from .views import settings, notifications_settings, sign_in, sign_up, profile, telega_book, telega_fetch
+from .views import settings, notifications_settings, sign_in, sign_up, profile, telega_book, telega_fetch, check_schedule, book
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('social-auth/', include('social_django.urls', namespace="social")),
@@ -14,6 +14,9 @@ urlpatterns = [
     path('sign_in', sign_in, name='sign_in'),
     path('sign_up', sign_up, name='sign_up'),
     path('MainApp/', include('MainApp.urls')),
+    
+    path('ajax/check_schedule', check_schedule, name='check_schedule'),
+    path('ajax/book', book, name='book'),
 
     path('telega/book', telega_book),
     path('telega/fetch', telega_fetch),

@@ -8,5 +8,4 @@ urlpatterns = [
     # path('change_seat/<str:place>/<int:place_id>', change_seat, name='change_seat'),
     # path('change_time/<str:place>/<int:place_id>', change_time, name='change_time'),
     path('my_booking', my_booking, name='my_booking'),
-    path('ajax/book', book, name='book'),
 ]

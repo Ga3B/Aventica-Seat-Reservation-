@@ -76,20 +76,20 @@ def place_shedule_strings(queryset, place_type):
         finish = row.finish.time().strftime('%H:%M')
         if place_type == 'Workplace':
             place_id = row.workplace_id
-            place_name=row.workplace.name
+            place_name = row.workplace.name
         elif place_type == 'Meeting Room':
             place_id = row.meeting_room_id
             place_name = row.meeting_room.name
 
-        res={}
-        res['place_type']=place_type
-        res['place_name']=place_name
-        res['place_id']=place_id
-        res['date']=row.start.date().strftime('%d/%m/%y')
-        res['start']=start
-        res['finish']=finish
-        res['username']=row.user.username
-        res['timezone']=user_tz
+        res = {}
+        res['place_type'] = place_type
+        res['place_name'] = place_name
+        res['place_id'] = place_id
+        res['date'] = row.start.date().strftime('%d/%m/%y')
+        res['start'] = start
+        res['finish'] = finish
+        res['username'] = row.user.username
+        res['timezone'] = user_tz
 
         # res = f'{place_type}#{place_id} at {row.start.date()} from {start} to {finish} by {row.user.username}, {user_tz}'
         strings.append(res)
@@ -106,7 +106,7 @@ def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Roo
     Test this as check_schedule(...)[0], since return value is a tuple!
     '''
     print(
-        f'Checking for {place_type}#{place_id}, {start.strftime("%d/%m/%y %H:%M %z")}, {finish.strftime("%d/%m/%y %H:%M %z")}')
+        f'Checking for {place_type}#{place_id}, {start.strftime("%d/%m/%y %H:%M")}, {finish.strftime("%d/%m/%y %H:%M")}')
     tz = timezone_from_utcoffset(str_utcoffset)
     if not tz:
         return (False, f"Invalid utc offset: {str_utcoffset}")
@@ -150,21 +150,26 @@ def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Roo
     if not rows:
         return (True, "Whole day was free")
 
-    print(
-        f'Local start is {start.strftime("%d/%m/%y %H:%M")}, local finish is {finish.strftime("%d/%m/%y %H:%M")}')
+    # print(f'Local start is {start.strftime("%d/%m/%y %H:%M")}, local finish is {finish.strftime("%d/%m/%y %H:%M")}')
     start, finish = start.astimezone(
         timezone.utc), finish.astimezone(timezone.utc)
-    print(
-        f'UTC start is {start.strftime("%d/%m/%y %H:%M")}, UTC finish is {finish.strftime("%d/%m/%y %H:%M")}')
+    # print(f'UTC start is {start.strftime("%d/%m/%y %H:%M")}, UTC finish is {finish.strftime("%d/%m/%y %H:%M")}')
 
     for row in rows:
+        # print(f'start is {row.start.time().strftime("%d/%m %H:%M")}UTC, finish is {row.finish.time().strftime("%d/%m %H:%M")}UTC')
         if row.start <= start <= row.finish:
             if start != row.finish:
-                return (False, f"Occupied by {row.user} from {row.start.time()}UTC to {row.finish.time()}UTC!")
+                return (False, f"1.Occupied by {row.user} from {row.start.time().strftime('%H:%M')}UTC"
+                        f" to {row.finish.time().strftime('%H:%M')}UTC!")
 
         if row.start <= finish <= row.finish:
             if finish != row.start:
-                return (False, f"Occupied by {row.user} from {row.start.time()}UTC to {row.finish.time()}UTC!")
+                return (False, f"2.Occupied by {row.user} from {row.start.time().strftime('%H:%M')}UTC"
+                        f" to {row.finish.time().strftime('%H:%M')}UTC!")
+        
+        if start <= row.start and finish >= row.finish:
+            return (False, f"3.Occupied by {row.user} from {row.start.time().strftime('%H:%M')}UTC"
+                        f" to {row.finish.time().strftime('%H:%M')}UTC!")
 
     return (True, "Free")
 
