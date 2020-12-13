@@ -7,9 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 # from django.contrib import messages
 # from django.urls import reverse
-from MainApp.models import Workplace_Schedule, Meeting_Room_Schedule, User, User_preferences
-from datetime import datetime, timezone, timedelta
-from filler import check_place_schedule, place_shedule_strings
+from MainApp.models import Workplace_Schedule, Meeting_Room_Schedule, User, User_preferences, Meeting_Room, Workplace
+from datetime import datetime, timezone
+from filler import check_place_schedule, place_shedule_strings, place_strings
+from social_django.models import UserSocialAuth
 
 
 @login_required()
@@ -181,7 +182,8 @@ def telega_book(request):
 
         if not all([date, start, finish, place_id, place_type, username]):
             # return JsonResponse(dumps([x for x in request.POST.items()]), safe=False, status=400)
-            return JsonResponse(dumps({"Some data is missing": [date, start, finish, place_id, place_type, username]}), safe=False, status=400)
+            return JsonResponse(dumps({"Some data is missing": [date, start, finish, place_id, place_type, username]}),
+                                safe=False, status=400)
 
         dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M')
         dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M')
@@ -217,6 +219,41 @@ def telega_book(request):
     return JsonResponse(dumps({"error": 'unknown error'}), safe=False, status=400)
 
 
+def telega_auth(request):
+    if request.method == "GET":
+        username = request.GET.get('username', '')
+        users = User.objects.all()
+        for user in users:
+            print(user)
+            if str(username) == str(user):
+                return JsonResponse(dumps({'username': user.id}), safe=False, status=200)
+        return JsonResponse(dumps({'error': 'Invalid username'}), safe=False, status=400)
+    return JsonResponse(dumps({'error': 'bad request'}), safe=False, status=400)
+
+
+def telega_fetch_rooms(request):
+    if request.method == "GET":
+        place_type = request.GET.get('place_type', '')
+
+        if place_type == 'Room':
+            mrs = Meeting_Room.objects.all()
+            print('***')
+            print(mrs)
+            print('***')
+
+            response = place_strings(mrs, 'Meeting Room')
+            return JsonResponse(dumps(response), safe=False, status=200)
+
+        elif place_type == 'Workplace':
+            wps = Workplace.objects.all()
+            response = place_strings(wps, 'Workplace')
+            return JsonResponse(dumps(response), safe=False, status=200)
+
+        return JsonResponse(dumps({'error': 'Invalid place_type'}), safe=False)
+        # if not all([date, start, finish, place_id, place_type, username]):
+    return JsonResponse(dumps({'error': 'bad request'}), safe=False, status=400)
+
+
 def telega_fetch(request):
     if request.method == "GET":
         place_id = request.GET.get('place_id', '')
@@ -250,4 +287,5 @@ def telega_fetch(request):
 
             return JsonResponse(dumps({'error': 'Invalid place_type'}), safe=False)
         # if not all([date, start, finish, place_id, place_type, username]):
-        return JsonResponse(dumps({"Some data is missing": [date, place_id, place_type, username]}), safe=False, status=400)
+        return JsonResponse(dumps({"Some data is missing": [date, place_id, place_type, username]}), safe=False,
+                            status=400)

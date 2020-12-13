@@ -16,6 +16,11 @@ fetch_data['place_type'] = 'Workplace'  # 'Room'
 # fetch_data['date'] = '08/12/20'
 # fetch_data['place_id'] = '85'
 
+# Данные для авторизации
+auth_data={'username':'User1'}
+# Данные для получения названия комнат
+room_data={'place_type':'Workplace'} #Room
+
 
 # Сюда стучимся бронировать, код 200 - успех, код 400 - ошибка
 # Формат вызова виден выше, старт не раньше 09:00, финиш не позже 22:00
@@ -24,6 +29,13 @@ book_url = 'http://127.0.0.1:8000/telega/book'
 # Формат ответа - строки вида '{Место}#{id} at {дата} from {начало} to {конец} by {юзернейм}, {часовой пояс}'
 # Строки соритрованы по дате
 fetch_url = 'http://127.0.0.1:8000/telega/fetch'
+
+# урл для авторизации
+auth_url ='http://127.0.0.1:8000/telega/auth'
+
+#урл для получения названия комнат
+fetch_room_url = 'http://127.0.0.1:8000/telega/fetch/rooms'
+# если код ответа =200, то пользователь есть в бд
 
 # Код ответа
 # response = requests.post(book_url, data)
