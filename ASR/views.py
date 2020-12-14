@@ -8,8 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 # from django.contrib import messages
 # from django.urls import reverse
 from MainApp.models import Workplace_Schedule, Meeting_Room_Schedule, User, User_preferences, Meeting_Room, Workplace
-from datetime import datetime, timezone
-from filler import check_place_schedule, place_shedule_strings, place_strings
+from datetime import datetime, timezone, timedelta
+from filler import check_place_schedule, place_shedule_strings, place_strings, send_event
 from social_django.models import UserSocialAuth
 
 
@@ -147,8 +147,12 @@ def book(request):
         responses = {}
         for date in dates:
             dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M')
-            dt_finish = datetime.strptime(
-                date + ' ' + finish, '%d/%m/%y %H:%M')
+            dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M')
+
+            event_date = datetime.strptime(date, "%Y%m%d")
+            event_start = datetime.strptime(start, "%H%M%S")
+            event_finish = datetime.strptime(finish, "%H%M%S")
+
             res, cause = check_place_schedule(
                 place_id, str_utcoffset, dt_start, dt_finish, place_type)
             responses[date] = {'fail': cause}
@@ -157,11 +161,13 @@ def book(request):
                     Workplace_Schedule.objects.create(workplace_id=place_id, user_id=user.id, start=dt_start.astimezone(
                         timezone.utc), finish=dt_finish.astimezone(timezone.utc))
                     responses[date] = {'from': dt_start.strftime("%H:%M"), 'to': dt_finish.strftime("%H:%M")}
+                    send_event(event_date,'Workplace',event_start,event_finish,'test4864@yandex.ru','sihcmwvranazjwxo')
 
                 elif place_type == 'Room':
                     Meeting_Room_Schedule.objects.create(meeting_room_id=place_id, user_id=user.id, start=dt_start.astimezone(
                         timezone.utc), finish=dt_finish.astimezone(timezone.utc))
                     responses[date] = {'from': dt_start.strftime("%H:%M"), 'to': dt_finish.strftime("%H:%M")}
+                    send_event(event_date, 'Room', start, finish, 'test4864@yandex.ru', 'sihcmwvranazjwxo')
         
         return JsonResponse(dumps(responses), safe=False, status=200)
 
