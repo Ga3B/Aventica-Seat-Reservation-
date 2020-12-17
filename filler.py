@@ -68,7 +68,9 @@ def place_strings(queryset, place_type):
     strings = []
     for row in queryset:
         place_name = row.name
+        place_id=row.id
         res = {'place_name': place_name}
+        res['place_id']= place_id
         strings.append(res)
     return strings
 
