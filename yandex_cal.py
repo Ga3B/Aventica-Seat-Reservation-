@@ -1,8 +1,9 @@
 import caldav
 from datetime import datetime
+from decouple import config
 
 
-def send_event(date, room, start, finish, username, password):
+def send_event(room, dt_start, dt_finish, username, password):
     client = caldav.DAVClient(url='https://caldav.yandex.ru/',
                               username=username, password=password)
     my_principal = client.principal()
@@ -11,10 +12,10 @@ def send_event(date, room, start, finish, username, password):
     now = datetime.now()
     date_now = now.strftime("%Y%m%d")
     time_now = now.strftime("%H%M%S")
-    #
-    # date=date.date().strftime("%Y%m%d")
-    # start=start.date().strftime("%H%M%S")
-    # finish=finish.date().strftime("%H%M%S")
+
+    date = dt_start.strftime("%Y%m%d")
+    start = dt_start.strftime("%H%M%S")
+    finish = dt_finish.strftime("%H%M%S")
 
     message_events = f"""BEGIN:VCALENDAR
 VERSION:2.0

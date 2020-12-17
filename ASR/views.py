@@ -1,7 +1,5 @@
 from json import dumps
 from django.shortcuts import render
-# from MainApp.models import User_preferences
-# from MainApp.forms import User_preferencesFrom
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -150,10 +148,6 @@ def book(request):
             dt_start = datetime.strptime(date + ' ' + start, '%d/%m/%y %H:%M')
             dt_finish = datetime.strptime(date + ' ' + finish, '%d/%m/%y %H:%M')
 
-            event_date = datetime.strptime(date, "%Y%m%d")
-            event_start = datetime.strptime(start, "%H%M%S")
-            event_finish = datetime.strptime(finish, "%H%M%S")
-
             res, cause = check_place_schedule(
                 place_id, str_utcoffset, dt_start, dt_finish, place_type)
             responses[date] = {'fail': cause}
@@ -162,13 +156,13 @@ def book(request):
                     Workplace_Schedule.objects.create(workplace_id=place_id, user_id=user.id, start=dt_start.astimezone(
                         timezone.utc), finish=dt_finish.astimezone(timezone.utc))
                     responses[date] = {'from': dt_start.strftime("%H:%M"), 'to': dt_finish.strftime("%H:%M")}
-                    send_event(event_date, 'Workplace', event_start, event_finish, 'test4864@yandex.ru', 'sihcmwvranazjwxo')
+                    send_event(f'Workplace #{place_id}', dt_start, dt_finish, 'test4864@yandex.ru', 'sihcmwvranazjwxo')
 
                 elif place_type == 'Room':
                     Meeting_Room_Schedule.objects.create(meeting_room_id=place_id, user_id=user.id, start=dt_start.astimezone(
                         timezone.utc), finish=dt_finish.astimezone(timezone.utc))
                     responses[date] = {'from': dt_start.strftime("%H:%M"), 'to': dt_finish.strftime("%H:%M")}
-                    send_event(event_date, 'Room', start, finish, 'test4864@yandex.ru', 'sihcmwvranazjwxo')
+                    send_event(f'Room #{place_id}', dt_start, dt_finish, 'test4864@yandex.ru', 'sihcmwvranazjwxo')
         
         return JsonResponse(dumps(responses), safe=False, status=200)
 
