@@ -23,6 +23,7 @@ class User_preferences(models.Model):
     yandex_mail = models.EmailField(blank=True, null=True)
     sync_on = models.BooleanField(default=False)
     notifications_on = models.BooleanField(default=False)
+    app_password = models.CharField(default='', max_length=32)
 
 
 class Workplace(models.Model):

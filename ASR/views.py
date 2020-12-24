@@ -19,12 +19,12 @@ def settings(request):
 
 @login_required()
 def profile(request):
-    if request.is_ajax and request.method == "POST":
+    if request.is_ajax and request.method == "POST" and request.POST.get('ntz', ''):
         timezones = [
             'Europe/Kaliningrad, UTC+02:00',
             'Europe/Moscow, UTC+03:00',
             'Europe/Volgograd, UTC+04:00',
-            'Asia/Yekaterinburg, UTC+05:00',
+            'Asia/Yekaterinburg, UTC+05:0s0',
             'Asia/Omsk, UTC+06:00',
             'Asia/Krasnoyarsk, UTC+07:00',
             'Asia/Irkutsk, UTC+08:00',
@@ -40,14 +40,23 @@ def profile(request):
         ups.timezone = new_timezone
         ups.save()
         return JsonResponse(dumps(f'timezone changed to {new_timezone}'), safe=False, status=200)
+    
+    if request.is_ajax and request.method == "POST" and request.POST.get('app_pass', ''):
+        app_pass = request.POST.get('app_pass', '')
+        ups = request.user.user_preferences
+        ups.app_password = app_pass
+        ups.save()
+        return JsonResponse(dumps(f'app password changed to {app_pass}'), safe=False, status=200)
 
     try:
         timezone = request.user.user_preferences.timezone
+        app_password = request.user.user_preferences.app_password
     except Exception:
         ups = User_preferences.objects.create(
             user=request.user, timezone='Asia/Yekaterinburg, UTC+05:00')
         timezone = ups.timezone
-    return render(request, "profile.html", {"timezone": timezone})
+        app_password = ''
+    return render(request, "profile.html", {"timezone": timezone, "app_password": app_password})
 
 
 @login_required()
@@ -156,13 +165,13 @@ def book(request):
                     Workplace_Schedule.objects.create(workplace_id=place_id, user_id=user.id, start=dt_start.astimezone(
                         timezone.utc), finish=dt_finish.astimezone(timezone.utc))
                     responses[date] = {'from': dt_start.strftime("%H:%M"), 'to': dt_finish.strftime("%H:%M")}
-                    send_event(f'Workplace #{place_id}', dt_start, dt_finish, 'test@aventica.ru', 'cmrwynsfeswpjptw')
+                    send_event(f'Workplace #{place_id}', dt_start, dt_finish, user.username, user.user_preferences.app_password)
 
                 elif place_type == 'Room':
                     Meeting_Room_Schedule.objects.create(meeting_room_id=place_id, user_id=user.id, start=dt_start.astimezone(
                         timezone.utc), finish=dt_finish.astimezone(timezone.utc))
                     responses[date] = {'from': dt_start.strftime("%H:%M"), 'to': dt_finish.strftime("%H:%M")}
-                    send_event(f'Room #{place_id}', dt_start, dt_finish, 'test@aventica.ru', 'cmrwynsfeswpjptw')
+                    send_event(f'Room #{place_id}', dt_start, dt_finish, user.username, user.user_preferences.app_password)
         
         return JsonResponse(dumps(responses), safe=False, status=200)
 

@@ -59,9 +59,9 @@ Profile
                         <a href="https://yandex.ru/support/passport/authorization/app-passwords.html">(Как его получить?)</a></label>
                     <div class="input-group">
 
-                     <input type="text" class="form-control" id="selectPassword">
+                     <input type="text" class="form-control" id="appPassword" value="{{ app_password }}">
                         <div class="input-group-append">
-                            <button id="changeEmail" class="btn btn-outline-primary" type="submit">Сохранить</button>
+                            <button id="changePassword" class="btn btn-outline-primary" type="submit">Сохранить</button>
                         </div>
                     </div>
                     {% csrf_token %}
@@ -104,6 +104,26 @@ Profile
               type: 'POST',
               url: "{% url 'profile' %}",
               data: {"ntz": ntz},
+              success: function(response) {
+                console.log(response);
+                location.reload();
+              },
+              error: function(response) {
+                alert("error");
+              }
+            });
+        });
+
+        $("#changePassword").on('click', function(e) {
+            e.preventDefault();
+            let token = $('[name=csrfmiddlewaretoken]').val();
+            let app_pass = $("#appPassword").val();
+            console.log(app_pass);
+            $.ajax({
+              headers: {'X-CSRFToken': token},
+              type: 'POST',
+              url: "{% url 'profile' %}",
+              data: {"app_pass": app_pass},
               success: function(response) {
                 console.log(response);
                 location.reload();
