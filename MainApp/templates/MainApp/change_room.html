@@ -189,8 +189,9 @@ Booking
         });
 
         $("#book").on('click', function(e) {
-          e.preventDefault();
-          let token = $('[name=csrfmiddlewaretoken]').val();
+            e.preventDefault();
+            document.getElementById('book').textContent = "Подождите...";
+            let token = $('[name=csrfmiddlewaretoken]').val();
             let date = $("#date").val();
             let start = $("#time_start").val();
             let finish = $("#time_end").val();
@@ -199,6 +200,7 @@ Booking
             let repeat = $('input[name="repeatOptions"]:checked').val();
             // console.log(date, start, finish, place_id, place_type, repeat);
             book_schedule(token, date, start, finish, place_id, place_type, repeat);
+            document.getElementById('book').textContent = "Забронировать свободные";
         });
     });
 
@@ -245,6 +247,7 @@ Booking
       $.ajax({
         headers: {'X-CSRFToken': token},
         type: 'POST',
+        async: false,
         url: "{% url 'book' %}",
         data: {"date": date, "start": start,
                 "finish": finish, "repeat": repeat, 
