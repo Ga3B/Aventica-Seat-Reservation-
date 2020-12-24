@@ -68,6 +68,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'social_django.context_processors.backends', 
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -113,6 +116,14 @@ AUTHENTICATION_BACKENDS = [
 
 SOCIAL_AUTH_YANDEX_OAUTH2_KEY = config('SOCIAL_AUTH_YANDEX_OAUTH2_KEY')        # App ID
 SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = config('SOCIAL_AUTH_YANDEX_OAUTH2_SECRET')  # App Secret
+SOCIAL_AUTH_YANDEX_OAUTH2_SCOPE = ['email']
+SOCIAL_AUTH_YANDEX_OAUTH2_PROFILE_EXTRA_PARAMS = {    
+  'fields': 'email, picture.type(large)'
+}
+SOCIAL_AUTH_YANDEX_OAUTH2_EXTRA_DATA = [
+    ('email', 'email'),
+    ('picture', 'picture'),
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
