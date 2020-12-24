@@ -156,13 +156,13 @@ def book(request):
                     Workplace_Schedule.objects.create(workplace_id=place_id, user_id=user.id, start=dt_start.astimezone(
                         timezone.utc), finish=dt_finish.astimezone(timezone.utc))
                     responses[date] = {'from': dt_start.strftime("%H:%M"), 'to': dt_finish.strftime("%H:%M")}
-                    send_event(f'Workplace #{place_id}', dt_start, dt_finish, 'test4864@yandex.ru', 'sihcmwvranazjwxo')
+                    send_event(f'Workplace #{place_id}', dt_start, dt_finish, 'test@aventica.ru', 'cmrwynsfeswpjptw')
 
                 elif place_type == 'Room':
                     Meeting_Room_Schedule.objects.create(meeting_room_id=place_id, user_id=user.id, start=dt_start.astimezone(
                         timezone.utc), finish=dt_finish.astimezone(timezone.utc))
                     responses[date] = {'from': dt_start.strftime("%H:%M"), 'to': dt_finish.strftime("%H:%M")}
-                    send_event(f'Room #{place_id}', dt_start, dt_finish, 'test4864@yandex.ru', 'sihcmwvranazjwxo')
+                    send_event(f'Room #{place_id}', dt_start, dt_finish, 'test@aventica.ru', 'cmrwynsfeswpjptw')
         
         return JsonResponse(dumps(responses), safe=False, status=200)
 
