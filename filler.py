@@ -68,13 +68,11 @@ def place_strings(queryset, place_type):
     strings = []
     for row in queryset:
         place_name = row.name
-        place_id=row.id
+        place_id = row.id
         res = {'place_name': place_name}
-        res['place_id']= place_id
+        res['place_id'] = place_id
         strings.append(res)
     return strings
-
-
 
 
 def place_shedule_strings(queryset, place_type):
@@ -166,16 +164,16 @@ def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Roo
         if row.start <= start <= row.finish:
             if start != row.finish:
                 return (False, f"1.Occupied by {row.user} from {row.start.time().strftime('%H:%M')}UTC"
-                        f" to {row.finish.time().strftime('%H:%M')}UTC!")
+                               f" to {row.finish.time().strftime('%H:%M')}UTC!")
 
         if row.start <= finish <= row.finish:
             if finish != row.start:
                 return (False, f"2.Occupied by {row.user} from {row.start.time().strftime('%H:%M')}UTC"
-                        f" to {row.finish.time().strftime('%H:%M')}UTC!")
-        
+                               f" to {row.finish.time().strftime('%H:%M')}UTC!")
+
         if start <= row.start and finish >= row.finish:
             return (False, f"3.Occupied by {row.user} from {row.start.time().strftime('%H:%M')}UTC"
-                        f" to {row.finish.time().strftime('%H:%M')}UTC!")
+                           f" to {row.finish.time().strftime('%H:%M')}UTC!")
 
     return (True, "Free")
 
@@ -195,16 +193,24 @@ def fill():
     user_msc_prefs = User_preferences.objects.create(
         user=user_msc, timezone='Europe/Moscow, UTC+03:00')
 
-    for i in range(7):
-        wp = Workplace.objects.create(
-            name=f'Рабочее место №{i}', description="Пустое описание")
+    # for i in range(5):
+    wp1 = Workplace.objects.create(name=f'Рабочее место у окна',
+                                   description="Светлое рабочее пространство, с видом на парк"),
+    wp2 = Workplace.objects.create(name=f'Рабочее место в опенспейсе',
+                                   description="Есть возможность поработать в команде :)"),
+    wp3 = Workplace.objects.create(name=f'Рабочее место для курильщиков', description="Ближе всех к выходу"),
+    wp4 = Workplace.objects.create(name=f'Рабочее место рядом с куллером', description="Для тех, кого мучает жажда"),
+    wp5 = Workplace.objects.create(name=f'Рабочее место рядом с приставкой',
+                                   description="""Для тех, кто пришел "поработать" """)
 
     mr1 = Meeting_Room.objects.create(
-        name='Переговорная комната№1', capacity=20, description="Пустое описание")
+        name='Центральная переговорная комната', capacity=20, description="С проектором и ВКС")
     mr2 = Meeting_Room.objects.create(
-        name='Переговорная комната№2', capacity=10, description="Пустое описание")
+        name='Комната для брейнштормов', capacity=10,
+        description="Панорамные окна, система кондиционирования и кресла-мешки")
 
     workplaces = Workplace.objects.all()
+    print(workplaces)
 
     for i in range(100):
         days = choice([x for x in range(15)])
@@ -216,7 +222,7 @@ def fill():
                 timedelta(days=days, hours=hours)
         hours = choice([x for x in range(24)])
         finish = start + timedelta(hours=hours)
-        wp = workplaces[choice([x for x in range(7)])]
+        wp = choice([wp1,wp2,wp3,wp4,wp5])
         res, cause = check_place_schedule(
             wp.id, str_utcoffset, start, finish, 'Workplace')
         if res:
@@ -267,5 +273,3 @@ def prep():
             (f'MR {i.workplace}'
              f'{i.start.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'
              f'to {i.finish.astimezone(timezone).strftime("%d-%m-%y %H:%M %z")}'))
-
-    
