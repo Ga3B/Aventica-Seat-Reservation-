@@ -268,7 +268,8 @@ def telega_fetch(request):
                 if date:
                     mrs = mrs.filter(start__date=datetime.strptime(
                         date, '%d/%m/%y').date())
-
+                if place_id:
+                    mrs = mrs.filter(room_id=place_id)
                 if username:
                     mrs = mrs.filter(user__username=username)
                 response = place_shedule_strings(mrs, 'Meeting Room')

@@ -85,6 +85,7 @@ def place_shedule_strings(queryset, place_type):
             continue
         start = row.start.time().strftime('%H:%M')
         finish = row.finish.time().strftime('%H:%M')
+        schedule_id=row.id
         if place_type == 'Workplace':
             place_id = row.workplace_id
             place_name = row.workplace.name
@@ -94,7 +95,7 @@ def place_shedule_strings(queryset, place_type):
 
         res = {'place_type': place_type, 'place_name': place_name, 'place_id': place_id,
                'date': row.start.date().strftime('%d/%m/%y'), 'start': start, 'finish': finish,
-               'username': row.user.username, 'timezone': user_tz}
+               'username': row.user.username, 'timezone': user_tz, 'schedule_id':schedule_id}
         # res = f'{place_type}#{place_id} at {row.start.date()} from {start} to {finish} by {row.user.username}, {user_tz}'
         strings.append(res)
     return strings
