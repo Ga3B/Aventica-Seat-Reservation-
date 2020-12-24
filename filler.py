@@ -164,16 +164,16 @@ def check_place_schedule(place_id, str_utcoffset, start, finish, place_type='Roo
         # print(f'start is {row.start.time().strftime("%d/%m %H:%M")}UTC, finish is {row.finish.time().strftime("%d/%m %H:%M")}UTC')
         if row.start <= start <= row.finish:
             if start != row.finish:
-                return (False, f"1.Occupied by {row.user} from {row.start.time().strftime('%H:%M')}UTC"
+                return (False, f"1.Occupied by {row.user.first_name}, {row.user.last_name} from {row.start.time().strftime('%H:%M')}UTC"
                                f" to {row.finish.time().strftime('%H:%M')}UTC!")
 
         if row.start <= finish <= row.finish:
             if finish != row.start:
-                return (False, f"2.Occupied by {row.user} from {row.start.time().strftime('%H:%M')}UTC"
+                return (False, f"2.Occupied by {row.user.first_name}, {row.user.last_name} from {row.start.time().strftime('%H:%M')}UTC"
                                f" to {row.finish.time().strftime('%H:%M')}UTC!")
 
         if start <= row.start and finish >= row.finish:
-            return (False, f"3.Occupied by {row.user} from {row.start.time().strftime('%H:%M')}UTC"
+            return (False, f"3.Occupied by {row.user.first_name}, {row.user.last_name} from {row.start.time().strftime('%H:%M')}UTC"
                            f" to {row.finish.time().strftime('%H:%M')}UTC!")
 
     return (True, "Free")
