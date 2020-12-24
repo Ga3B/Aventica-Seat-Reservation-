@@ -219,7 +219,7 @@ Booking
           let unavailableLabel = "Все даты доступны";
           let msg = "";
           $.each(JSON.parse(response), function (k, v){
-            if (v != "Free"){
+            if (v != "Free" && v != "Whole day was free"){
               msg += `<li>${k} - ${v}</li>`;
             }
           });
