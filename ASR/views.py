@@ -24,7 +24,7 @@ def profile(request):
             'Europe/Kaliningrad, UTC+02:00',
             'Europe/Moscow, UTC+03:00',
             'Europe/Volgograd, UTC+04:00',
-            'Asia/Yekaterinburg, UTC+05:0s0',
+            'Asia/Yekaterinburg, UTC+05:00',
             'Asia/Omsk, UTC+06:00',
             'Asia/Krasnoyarsk, UTC+07:00',
             'Asia/Irkutsk, UTC+08:00',
